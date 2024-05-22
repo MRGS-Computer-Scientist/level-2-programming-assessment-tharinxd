@@ -1,18 +1,29 @@
-from tkinter import *
+""" Tkinter is for the GUI. """
+from tkinter import Tk, Frame, Button
 
+def addtask():
+    """ Add task function, activated when the "Add Task" button is pressed. """
+    print("Add task button pressed!")
+
+# Defines height and width of the window.
 w_width = 500
-w_height = 700
+w_height = 750
 
+# Sets up window.
 window = Tk()
-window.geomerty(str(w_width) + "n" + str(w_height))
-window.title("My app")
+window.geometry = str(w_width) + "x" + str(w_height)
+window.title("Application")
 
-main_frame = Frame(background= "red" , width=w_width, height= w_height)
-main_frame.pack()
+# This is where the list of tasks will go.
+tasks_frame = Frame(background="#FFFFFF", width=w_width, height=650)
+tasks_frame.pack()
 
-hello_label = Label(text= "Hello Bilal")
-hello_label.grid(column=0, row=0)
+# This is where the buttons at the bottom will go.
+buttons_frame = Frame(background="#D9D9D9", width=w_width, height=150)
+buttons_frame.pack()
 
+# Button that runs the addtask function.
+addtask_button = Button(buttons_frame, text="+ | Add Task", command=addtask, bg="#D9D9D9")
+addtask_button.place(relx=0.5, rely=0.5, anchor="center")
 
 window.mainloop()
-
