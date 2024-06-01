@@ -1,26 +1,20 @@
 import tkinter as tk
-from tkinter import messagebox, simpledialog
+from tkinter import messagebox,simpledialog
+
 
 # Function to handle login with email
 def login_with_email():
     email = email_entry.get()
     password = password_entry.get()
     if email and password:
-        # Here you would add your authentication logic
+        
         messagebox.showinfo("Login", "Logged in with email")
-        open_home_page()
     else:
         messagebox.showwarning("Input error", "Please enter both email and password")
 
 # Function to handle guest login
 def login_as_guest():
     messagebox.showinfo("Guest", "Continuing as Guest")
-    open_home_page()
-
-# Function to open home page
-def open_home_page():
-    login_window.destroy()
-    home_page()
 
 # Set up the login window
 login_window = tk.Tk()
@@ -65,6 +59,20 @@ guest_button.pack(pady=(0, 20))
 # Terms of Service and Privacy Policy
 tos_label = tk.Label(login_window, text="By continuing, you agree to our Terms of Service and Privacy Policy", font=("Helvetica", 10), bg="white")
 tos_label.pack(side="bottom", pady=(20, 10))
+
+#add image to bottom right
+def add_image():
+    # Create a PhotoImage object from an image file
+    image = tk.PhotoImage(file="wompwomp.png")  
+
+    # Create a label to display the image
+    image_label = tk.Label(login_window, image=image, bg="white")
+    image_label.image = image  
+
+    # Position the image at the bottom right
+    image_label.place(relx=0.0, rely=1.0, anchor='sw', x=0, y=0)
+
+add_image()
 
 # Run the Tkinter event loop
 login_window.mainloop()
