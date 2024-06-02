@@ -3,18 +3,32 @@ from tkinter import messagebox,simpledialog
 
 
 # Function to handle login with email
-def login_with_email():
+def login_with_email(): 
     email = email_entry.get()
     password = password_entry.get()
     if email and password:
-        
         messagebox.showinfo("Login", "Logged in with email")
+        login_window.destroy()  # Destroy the login window
+        home_page()  # Call the home page function
     else:
         messagebox.showwarning("Input error", "Please enter both email and password")
 
 # Function to handle guest login
 def login_as_guest():
     messagebox.showinfo("Guest", "Continuing as Guest")
+    login_window.destroy()  # Destroy the login window
+    home_page()  # Call the home page function
+
+# Function to create the home page
+def home_page():
+    root = tk.Tk()
+    root.title("Homework Tracker")
+    root.geometry("1920x1800")
+    root.configure(bg="white")
+
+
+    root.mainloop
+
 
 # Set up the login window
 login_window = tk.Tk()
@@ -80,8 +94,6 @@ def add_image():
     image_label.place(relx=0.0, rely=1.0, anchor='sw', x=0, y=0)
 
 add_image()
-
-
 
 # Run the Tkinter event loop
 login_window.mainloop()
