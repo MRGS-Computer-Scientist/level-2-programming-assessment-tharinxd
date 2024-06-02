@@ -26,6 +26,30 @@ def home_page():
     root.geometry("1920x1800")
     root.configure(bg="white")
 
+    # Left Frame for navigation
+    left_frame = tk.Frame(root, bg="lightblue", width=250)
+    left_frame.pack(fill="y", side="left")
+
+    # Main Frame for content
+    main_frame = tk.Frame(root, bg="white")
+    main_frame.pack(fill="both", expand=True)
+
+    # Left Frame content
+    title_label = tk.Label(left_frame, text="Homework Tracker™", font=("Inter", 30, "bold"), bg="lightblue")
+    title_label.pack(pady=10)  # Adjust padding as needed
+    sections = ["Home", "Tasks", "Subjects", "Account", "Connected Apps", "Theme", "Report a Problem", "Help And Support", "Feedback"]
+    for section in sections:
+        button = tk.Button(left_frame, text=section, font=("Inter", 12), width=15, height=2, bg="white", relief="flat")
+        button.pack(pady=5)
+
+
+    # Main Frame content
+    welcome_label = tk.Label(main_frame, text="Welcome Back Tharin", font=("Inter", 24, "bold"), bg="white")
+    welcome_label.pack(pady=20)
+
+    search_entry = tk.Entry(main_frame, font=("Inter", 12), width=50, relief="solid")
+    search_entry.insert(0, "Quick Search")
+    search_entry.pack(pady=20)
 
     root.mainloop
 
