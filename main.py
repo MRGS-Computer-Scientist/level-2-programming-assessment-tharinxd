@@ -159,27 +159,27 @@ email_label.place(relx=0.5, rely=0.25, anchor='center')
 
 # Email and Password Labels and Entries
 email_label = tk.Label(login_window, text="Enter your email and password to login for this app", font=label_font, bg="white")
-email_label.place(relx=0.5, rely=0.3, anchor='center')
+email_label.place(relx=0.5, rely=0.35, anchor='center')
 
 email_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid" )
 email_entry.insert(0, "email@domain.com")
-email_entry.place(relx=0.5, rely=0.35, anchor='center')
+email_entry.place(relx=0.5, rely=0.4, anchor='center')
 
 password_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", show="*" )
 password_entry.insert(0, "enter password")
-password_entry.place(relx=0.5, rely=0.4, anchor='center')
+password_entry.place(relx=0.5, rely=0.45, anchor='center')
 
 # Login Button
 login_button = tk.Button(login_window, text="Login with email", font=button_font, bg="black", fg="white", width=35, command=login_with_email)
-login_button.place(relx=0.5, rely=0.45, anchor='center')
+login_button.place(relx=0.5, rely=0.5, anchor='center')
 
 # Separator
 separator_label = tk.Label(login_window, text="or continue as a guest", font=label_font, bg="white")
-separator_label.place(relx=0.5, rely=0.5, anchor='center')
+separator_label.place(relx=0.5, rely=0.55, anchor='center')
 
 # Guest Button
 guest_button = tk.Button(login_window, text="Guest", font=button_font, bg="lightgrey", width=35, command=login_as_guest)
-guest_button.place(relx=0.5, rely=0.55, anchor='center')
+guest_button.place(relx=0.5, rely=0.6, anchor='center')
 
 # Terms of Service and Privacy Policy
 tos_label = tk.Label(login_window, text="By continuing, you agree to our Terms of Service and Privacy Policy", font=("Helvetica", 10), bg="white")
