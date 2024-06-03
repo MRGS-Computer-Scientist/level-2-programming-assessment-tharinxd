@@ -32,7 +32,7 @@ def add_task_window():
 
     add_window = tk.Toplevel(root)
     add_window.title("Add Task")
-    add_window.geometry("1920x1080")
+    add_window.geometry("400x300")
 
     input_frame = tk.Frame(add_window, bg="white")
     input_frame.pack(pady=20, padx=20)
@@ -65,11 +65,11 @@ def home_page():
     global root,table
     root = tk.Tk()
     root.title("Homework Tracker")
-    root.geometry("1920x1800")
+    root.geometry("1024x768")
     root.configure(bg="white")
 
     # Left Frame for navigation
-    left_frame = tk.Frame(root, bg="lightblue", width=250)
+    left_frame = tk.Frame(root, bg="lightblue", width=220)
     left_frame.pack(fill="y", side="left")
 
     # Main Frame for content
@@ -88,24 +88,29 @@ def home_page():
 
     # Main Frame content
     welcome_label = tk.Label(main_frame, text="Welcome Back Tharin", font=("Inter", 24, "bold"), bg="white")
-    welcome_label.pack(pady=20)
+    welcome_label.place(x=20,y=20)
 
     search_entry = tk.Entry(main_frame, font=("Inter", 12), width=50, relief="solid")
     search_entry.insert(0, "Quick Search")
-    search_entry.pack(pady=10)
+    search_entry.place(x=790, y=20)
 
         # Upcoming Tasks Table
     table_frame = tk.Frame(main_frame, bg="white", relief="solid", bd=1)
-    table_frame.pack(pady=20)
+    table_frame.place(relx=0.5, rely=0.5, anchor="center")
 
     columns = ["Subject", "Task", "Due Date", "Time"]
-    table = ttk.Treeview(table_frame, columns=columns, show='headings', height=3)
+    table = ttk.Treeview(table_frame, columns=columns, show='headings', height=8)
     
     for col in columns:
         table.heading(col, text=col)
-        table.column(col, anchor="center")
+        table.column(col, anchor="center", width=150)
     
         table.pack()
+
+        # Increase font size for rows and columns
+    style = ttk.Style()
+    style.configure("Treeview.Heading", font=("Inter", 14))
+    style.configure("Treeview", font=("Inter", 12), rowheight=30)
 
     # Sample tasks
     tasks = [
@@ -118,14 +123,14 @@ def home_page():
         table.insert("", "end", values=task)
 
     # Set A Reminder button to Add Task button
-    add_task_button = tk.Button(main_frame, text="Add Task", font=("Inter", 12), bg="black", fg="white", relief="flat", command=add_task_window)
-    add_task_button.pack(pady=10)
+    add_task_button = tk.Button(main_frame, text="Add Task", font=("Inter", 12), bg="black", fg="white",  width=20, relief="flat", command=add_task_window)
+    add_task_button.place(relx=0.26, rely=0.7)
 
-    edit_task_button = tk.Button(main_frame, text="Edit Task", font=("Inter", 12), bg="white", relief="solid")
-    edit_task_button.pack(pady=10)
+    edit_task_button = tk.Button(main_frame, text="Edit Task", font=("Inter", 12), bg="white", width=10, relief="solid")
+    edit_task_button.place(relx=0.26, rely=0.95)
 
     logout_button = tk.Button(main_frame, text="Logout", font=("Inter", 12), bg="white", relief="solid",)
-    logout_button.pack(pady=10)
+    logout_button.place(relx=0.94, rely=0.95)
 
     root.mainloop
 
@@ -134,7 +139,7 @@ def home_page():
 # Set up the login window
 login_window = tk.Tk()
 login_window.title("Homework Tracker")
-login_window.geometry("1920x1080")
+login_window.geometry("1024x768")
 login_window.state('zoomed') 
 login_window.configure(bg="white")
 
@@ -183,7 +188,7 @@ tos_label.pack(side="bottom", pady=(20, 10))
 #add image to bottom right
 def add_image():
     # Create a PhotoImage object from an image file
-    image = tk.PhotoImage(file="123.png")  
+    image = tk.PhotoImage(file="wompwomp.png")  
 
     
 
