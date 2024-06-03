@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox,simpledialog
+from tkinter import ttk
 
 
 # Function to handle login with email
@@ -19,8 +20,49 @@ def login_as_guest():
     login_window.destroy()  # Destroy the login window
     home_page()  # Call the home page function
 
+def add_task_window():
+    def submit_task():
+        subject = subject_entry.get()
+        task = task_entry.get()
+        due_date = due_date_entry.get()
+        time = time_entry.get()
+        if subject and task and due_date and time:
+            table.insert("", "end", values=(subject, task, due_date, time))
+            add_window.destroy()
+
+    add_window = tk.Toplevel(root)
+    add_window.title("Add Task")
+    add_window.geometry("1920x1080")
+
+    input_frame = tk.Frame(add_window, bg="white")
+    input_frame.pack(pady=20, padx=20)
+
+    subject_label = tk.Label(input_frame, text="Subject", font=("Inter", 12), bg="white")
+    subject_label.grid(row=0, column=0, padx=5, pady=5)
+    subject_entry = tk.Entry(input_frame, font=("Inter", 12), relief="solid")
+    subject_entry.grid(row=0, column=1, padx=5, pady=5)
+
+    task_label = tk.Label(input_frame, text="Task", font=("Inter", 12), bg="white")
+    task_label.grid(row=1, column=0, padx=5, pady=5)
+    task_entry = tk.Entry(input_frame, font=("Inter", 12), relief="solid")
+    task_entry.grid(row=1, column=1, padx=5, pady=5)
+
+    due_date_label = tk.Label(input_frame, text="Due Date", font=("Inter", 12), bg="white")
+    due_date_label.grid(row=2, column=0, padx=5, pady=5)
+    due_date_entry = tk.Entry(input_frame, font=("Inter", 12), relief="solid")
+    due_date_entry.grid(row=2, column=1, padx=5, pady=5)
+
+    time_label = tk.Label(input_frame, text="Time", font=("Inter", 12), bg="white")
+    time_label.grid(row=3, column=0, padx=5, pady=5)
+    time_entry = tk.Entry(input_frame, font=("Inter", 12), relief="solid")
+    time_entry.grid(row=3, column=1, padx=5, pady=5)
+
+    submit_button = tk.Button(input_frame, text="Submit", font=("Inter", 12), bg="white", relief="solid", command=submit_task)
+    submit_button.grid(row=4, columnspan=2, pady=10)
+
 # Function to create the home page
 def home_page():
+    global root,table
     root = tk.Tk()
     root.title("Homework Tracker")
     root.geometry("1920x1800")
@@ -35,11 +77,12 @@ def home_page():
     main_frame.pack(fill="both", expand=True)
 
     # Left Frame content
-    title_label = tk.Label(left_frame, text="Homework Tracker™", font=("Inter", 30, "bold"), bg="lightblue")
+    title_label = tk.Label(left_frame, text="Homework Tracker™", font=("Inter", 20  , "bold"), bg="lightblue")
     title_label.pack(pady=10)  # Adjust padding as needed
     sections = ["Home", "Tasks", "Subjects", "Account", "Connected Apps", "Theme", "Report a Problem", "Help And Support", "Feedback"]
+    
     for section in sections:
-        button = tk.Button(left_frame, text=section, font=("Inter", 12), width=15, height=2, bg="white", relief="flat")
+        button = tk.Button(left_frame, text=section, font=("Inter", 12), width=20, height=2, bg="white", relief="flat")
         button.pack(pady=5)
 
 
@@ -49,9 +92,43 @@ def home_page():
 
     search_entry = tk.Entry(main_frame, font=("Inter", 12), width=50, relief="solid")
     search_entry.insert(0, "Quick Search")
-    search_entry.pack(pady=20)
+    search_entry.pack(pady=10)
+
+        # Upcoming Tasks Table
+    table_frame = tk.Frame(main_frame, bg="white", relief="solid", bd=1)
+    table_frame.pack(pady=20)
+
+    columns = ["Subject", "Task", "Due Date", "Time"]
+    table = ttk.Treeview(table_frame, columns=columns, show='headings', height=3)
+    
+    for col in columns:
+        table.heading(col, text=col)
+        table.column(col, anchor="center")
+    
+        table.pack()
+
+    # Sample tasks
+    tasks = [
+        ("Physics", "ESA Chapter 10", "12/04/24", "8:00 P.M"),
+        ("Maths", "Stats Mock", "5/04/24", "11:59 P.M"),
+        ("English", "Novel Questions", "15/05/24", "TBD")
+    ]
+
+    for task in tasks:
+        table.insert("", "end", values=task)
+
+    # Set A Reminder button to Add Task button
+    add_task_button = tk.Button(main_frame, text="Add Task", font=("Inter", 12), bg="black", fg="white", relief="flat", command=add_task_window)
+    add_task_button.pack(pady=10)
+
+    edit_task_button = tk.Button(main_frame, text="Edit Task", font=("Inter", 12), bg="white", relief="solid")
+    edit_task_button.pack(pady=10)
+
+    logout_button = tk.Button(main_frame, text="Logout", font=("Inter", 12), bg="white", relief="solid",)
+    logout_button.pack(pady=10)
 
     root.mainloop
+
 
 
 # Set up the login window
