@@ -1,7 +1,18 @@
-import tkinter as tk
+import tkinter as tk 
 from tkinter import messagebox,simpledialog
 from tkinter import ttk
+import os
+import json
 
+credentials_file = 'credentials.json'
+
+try:
+    with open(credentials_file, 'r') as file:
+        users = json.load(file)
+except (FileNotFoundError, json.JSONDecodeError):
+    users = []
+    with open(credentials_file, 'w') as file:
+        json.dump(users, file)
 
 # Function to handle login with email
 def login_with_email(): 
@@ -69,7 +80,7 @@ def home_page():
     root.configure(bg="white")
 
     # Left Frame for navigation
-    left_frame = tk.Frame(root, bg="lightblue", width=220)
+    left_frame = tk.Frame(root, bg="#FFFFFF", width=210)
     left_frame.pack(fill="y", side="left")
 
     # Main Frame for content
@@ -77,17 +88,17 @@ def home_page():
     main_frame.pack(fill="both", expand=True)
 
     # Left Frame content
-    title_label = tk.Label(left_frame, text="Homework Tracker™", font=("Inter", 20  , "bold"), bg="lightblue")
+    title_label = tk.Label(left_frame, text="Homework Tracker™", font=("Inter", 20  , "bold"), bg="#FFFFFF")
     title_label.pack(pady=10)  # Adjust padding as needed
     sections = ["Home", "Tasks", "Subjects", "Account", "Connected Apps", "Theme", "Report a Problem", "Help And Support", "Feedback"]
     
     for section in sections:
-        button = tk.Button(left_frame, text=section, font=("Inter", 12), width=20, height=2, bg="white", relief="flat")
+        button = tk.Button(left_frame, text=section, font=("Inter", 12), width=20, height=2, bg="#FFFFFF", relief="flat")
         button.pack(pady=5)
 
 
     # Main Frame content
-    welcome_label = tk.Label(main_frame, text="Welcome Back Tharin", font=("Inter", 24, "bold"), bg="white")
+    welcome_label = tk.Label(main_frame, text="Welcome Back Tharin", font=("Inter", 24, "bold"), bg="#FFFFFF")
     welcome_label.place(x=20,y=20)
 
     search_entry = tk.Entry(main_frame, font=("Inter", 12), width=50, relief="solid")
@@ -144,51 +155,130 @@ login_window.state('zoomed')
 login_window.configure(bg="white")
 
 # Set up fonts and styles
-title_font = ("Inter", 30, "bold")
-bold_label_font = ("Inter", 20, "bold")
-label_font = ("Inter", 12)
-entry_font = ("Inter", 12)
-button_font = ("Inter", 12, "bold")
+title_font = ("Inter", 35, "bold")
+bold_label_font = ("Inter", 25, "bold")
+label_font = ("Inter", 15)
+entry_font = ("Inter", 15)
+button_font = ("Inter", 15, "bold")
 
 # Title
 title_label = tk.Label(login_window, text="Homework Tracker™", font=title_font, bg="white")
-title_label.place(x=0, y=0, anchor='nw')
+title_label.place(x=21, y=0,)
 
 email_label = tk.Label(login_window, text="Login", font=bold_label_font, bg="white")
-email_label.place(relx=0.5, rely=0.25, anchor='center')
+email_label.place(relx=0.5, rely=0.29, anchor='center')
 
 # Email and Password Labels and Entries
 email_label = tk.Label(login_window, text="Enter your email and password to login for this app", font=label_font, bg="white")
 email_label.place(relx=0.5, rely=0.35, anchor='center')
 
-email_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid" )
+email_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid" ,fg="#828282" )
 email_entry.insert(0, "email@domain.com")
 email_entry.place(relx=0.5, rely=0.4, anchor='center')
 
-password_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", show="*" )
+password_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", show="*" , fg="#828282" )
 password_entry.insert(0, "enter password")
 password_entry.place(relx=0.5, rely=0.45, anchor='center')
 
+login_button = tk.Button(login_window, text="Login with email", font=button_font, bg="black", fg="white", width=36, command=login_with_email)
+login_button.place(relx=0.5, rely=0.5, anchor='center')
+
+separator_label = tk.Label(login_window, text="---------------- or continue as a guest ----------------", font=label_font, bg="white", fg="#828282")
+separator_label.place(relx=0.5, rely=0.55, anchor='center')
+
+guest_button = tk.Button(login_window, text="Guest", font=button_font, bg="lightgrey", width=36, command=login_as_guest)
+guest_button.place(relx=0.5, rely=0.6, anchor='center')
+
+tos_label = tk.Label(login_window, text="By continuing, you agree to our Terms of Service and Privacy Policy", font=("Helvetica", 10), bg="white")
+tos_label.place(relx=0.5, rely=0.65, anchor='center')
+
+
+def login_with_email():
+    email = email_entry.get()
+    password = password_entry.get()
+
+    for user in users:
+        if user['email'] == email and user['password'] == password:
+            messagebox.showinfo("Success", "Login successful!")
+            login_window.destroy()  # Destroy the login window
+            home_page()  # Call the home page function
+            return
+
+    messagebox.showerror("Error", "Invalid email or password!")
 # Login Button
-login_button = tk.Button(login_window, text="Login with email", font=button_font, bg="black", fg="white", width=35, command=login_with_email)
+login_button = tk.Button(login_window, text="Login with email", font=button_font, bg="black", fg="white", width=36, command=login_with_email)
 login_button.place(relx=0.5, rely=0.5, anchor='center')
 
 # Separator
-separator_label = tk.Label(login_window, text="or continue as a guest", font=label_font, bg="white")
+separator_label = tk.Label(login_window, text="---------------- or continue as a guest ----------------", font=label_font, bg="white", fg="#828282")
 separator_label.place(relx=0.5, rely=0.55, anchor='center')
 
 # Guest Button
-guest_button = tk.Button(login_window, text="Guest", font=button_font, bg="lightgrey", width=35, command=login_as_guest)
+guest_button = tk.Button(login_window, text="Guest", font=button_font, bg="lightgrey", width=36, command=lambda: messagebox.showinfo("Guest", "Continuing as guest."))
 guest_button.place(relx=0.5, rely=0.6, anchor='center')
 
 # Terms of Service and Privacy Policy
 tos_label = tk.Label(login_window, text="By continuing, you agree to our Terms of Service and Privacy Policy", font=("Helvetica", 10), bg="white")
-tos_label.pack(side="bottom", pady=(20, 10))
+tos_label.place(relx=0.5, rely=0.65, anchor='center')
+
+def show_signup_window():
+    signup_window = tk.Toplevel(login_window)
+    signup_window.title("Sign Up")
+    signup_window.geometry("1024x768")
+    signup_window.state('zoomed')
+    signup_window.configure(bg="white")
+
+    # Sign Up Labels and Entries
+    signup_title = tk.Label(signup_window, text="Sign Up", font=title_font, bg="white")
+    signup_title.place(relx=0.5, rely=0.1, anchor='center')
+
+    signup_email_label = tk.Label(signup_window, text="Email", font=label_font, bg="white")
+    signup_email_label.place(relx=0.5, rely=0.2, anchor='center')
+    signup_email_entry = tk.Entry(signup_window, font=entry_font, width=40, borderwidth=0.5, relief="solid")
+    signup_email_entry.place(relx=0.5, rely=0.25, anchor='center')
+
+    signup_password_label = tk.Label(signup_window, text="Password", font=label_font, bg="white")
+    signup_password_label.place(relx=0.5, rely=0.3, anchor='center')
+    signup_password_entry = tk.Entry(signup_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", show="*")
+    signup_password_entry.place(relx=0.5, rely=0.35, anchor='center')
+
+    signup_confirm_password_label = tk.Label(signup_window, text="Confirm Password", font=label_font, bg="white")
+    signup_confirm_password_label.place(relx=0.5, rely=0.4, anchor='center')
+    signup_confirm_password_entry = tk.Entry(signup_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", show="*")
+    signup_confirm_password_entry.place(relx=0.5, rely=0.45, anchor='center')
+
+    def signup():
+        email = signup_email_entry.get()
+        password = signup_password_entry.get()
+        confirm_password = signup_confirm_password_entry.get()
+
+        if password != confirm_password:
+            messagebox.showerror("Error", "Passwords do not match!")
+            return
+
+        for user in users:
+            if user['email'] == email:
+                messagebox.showerror("Error", "Email already exists!")
+                return
+
+        users.append({'email': email, 'password': password})
+        with open(credentials_file, 'w') as file:
+            json.dump(users, file)
+
+        messagebox.showinfo("Success", "Account created successfully!")
+        signup_window.destroy()
+
+    signup_button = tk.Button(signup_window, text="Sign Up", font=button_font, bg="black", fg="white", width=36, command=signup)
+    signup_button.place(relx=0.5, rely=0.55, anchor='center')
+
+# Add a Sign Up Button to the Login Window
+signup_button = tk.Button(login_window, text="Sign Up", font=button_font, bg="black", fg="white", width=36, command=show_signup_window)
+signup_button.place(relx=0.5, rely=0.7, anchor='center')
 
 #add image to bottom right
 def add_image():
     # Create a PhotoImage object from an image file
-    image = tk.PhotoImage(file="wompwomp.png")  
+    image = tk.PhotoImage(file="123.png")  
 
     
 
