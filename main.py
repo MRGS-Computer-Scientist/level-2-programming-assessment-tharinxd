@@ -1,4 +1,6 @@
-import tkinter as tk 
+from tkinter import*
+import tkinter as tk
+from PIL import ImageTk,Image
 from tkinter import messagebox,simpledialog
 from tkinter import ttk
 import os
@@ -17,7 +19,7 @@ except (FileNotFoundError, json.JSONDecodeError):
 # Function to handle login with email
 def login_with_email(): 
     email = email_entry.get()
-    password = password_entry.get()
+    password = password_entry.get() 
     if email and password:
         messagebox.showinfo("Login", "Logged in with email")
         login_window.destroy()  # Destroy the login window
@@ -27,9 +29,9 @@ def login_with_email():
 
 # Function to handle guest login
 def login_as_guest():
-    messagebox.showinfo("Guest", "Continuing as Guest")
     login_window.destroy()  # Destroy the login window
     home_page()  # Call the home page function
+
 
 def add_task_window():
     def submit_task():
@@ -205,6 +207,12 @@ def login_with_email():
             return
 
     messagebox.showerror("Error", "Invalid email or password!")
+    
+def guest_login_action():
+    messagebox.showinfo("Guest", "Continuing as guest.")
+    login_as_guest()
+
+    
 # Login Button
 login_button = tk.Button(login_window, text="Login with email", font=button_font, bg="black", fg="white", width=36, command=login_with_email)
 login_button.place(relx=0.5, rely=0.5, anchor='center')
@@ -214,7 +222,8 @@ separator_label = tk.Label(login_window, text="---------------- or continue as a
 separator_label.place(relx=0.5, rely=0.55, anchor='center')
 
 # Guest Button
-guest_button = tk.Button(login_window, text="Guest", font=button_font, bg="lightgrey", width=36, command=lambda: messagebox.showinfo("Guest", "Continuing as guest."))
+# Guest Button
+guest_button = tk.Button(login_window, text="Guest", font=button_font, bg="lightgrey", width=36, command=guest_login_action)
 guest_button.place(relx=0.5, rely=0.6, anchor='center')
 
 # Terms of Service and Privacy Policy
