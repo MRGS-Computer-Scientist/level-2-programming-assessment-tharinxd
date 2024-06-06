@@ -1,6 +1,5 @@
 from tkinter import*
 import tkinter as tk
-from PIL import ImageTk,Image
 from tkinter import messagebox,simpledialog
 from tkinter import ttk
 import os
@@ -8,11 +7,15 @@ import json
 
 credentials_file = 'credentials.json'
 
+# Attempt to open and load the JSON data from the specified credentials file.
 try:
     with open(credentials_file, 'r') as file:
         users = json.load(file)
+# If the file does not exist or the JSON data is malformed, handle the exceptions.
 except (FileNotFoundError, json.JSONDecodeError):
+    # Initialize an empty list for users if an error occurs.
     users = []
+    # Create the credentials file with an empty list to ensure it exists.
     with open(credentials_file, 'w') as file:
         json.dump(users, file)
 
