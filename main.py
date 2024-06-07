@@ -1,6 +1,6 @@
-from tkinter import*
+from tkinter import *
 import tkinter as tk
-from tkinter import messagebox,simpledialog
+from tkinter import messagebox, simpledialog
 from tkinter import ttk
 import os
 import json
@@ -21,38 +21,54 @@ except (FileNotFoundError, json.JSONDecodeError):
 
 # Function to handle login with email
 def login_with_email(): 
+    # Get the email and password from the respective entry fields
     email = email_entry.get()
-    password = password_entry.get() 
+    password = password_entry.get()
+    
+    # Check if email and password are entered
     if email and password:
+        # Show an info message on successful login
         messagebox.showinfo("Login", "Logged in with email")
-        login_window.destroy()  # Destroy the login window
-        home_page()  # Call the home page function
+        # Close the login window
+        login_window.destroy()
+        # Open the home page
+        home_page()
     else:
+        # Show a warning message if email or password is missing
         messagebox.showwarning("Input error", "Please enter both email and password")
 
 # Function to handle guest login
 def login_as_guest():
-    login_window.destroy()  # Destroy the login window
-    home_page()  # Call the home page function
+    # Close the login window
+    login_window.destroy()
+    # Open the home page
+    home_page()
 
-
+# Function to display the window for adding a new task
 def add_task_window():
     def submit_task():
+        # Get task details from the entry fields
         subject = subject_entry.get()
         task = task_entry.get()
         due_date = due_date_entry.get()
         time = time_entry.get()
+        # Check if all fields are filled
         if subject and task and due_date and time:
+            # Insert the new task into the table
             table.insert("", "end", values=(subject, task, due_date, time))
+            # Close the add task window
             add_window.destroy()
 
+    # Create a new top-level window for adding a task
     add_window = tk.Toplevel(root)
     add_window.title("Add Task")
     add_window.geometry("400x300")
 
+    # Frame for input fields
     input_frame = tk.Frame(add_window, bg="white")
     input_frame.pack(pady=20, padx=20)
 
+    # Labels and entry fields for task details
     subject_label = tk.Label(input_frame, text="Subject", font=("Inter", 12), bg="white")
     subject_label.grid(row=0, column=0, padx=5, pady=5)
     subject_entry = tk.Entry(input_frame, font=("Inter", 12), relief="solid")
@@ -73,12 +89,13 @@ def add_task_window():
     time_entry = tk.Entry(input_frame, font=("Inter", 12), relief="solid")
     time_entry.grid(row=3, column=1, padx=5, pady=5)
 
+    # Submit button to add the task
     submit_button = tk.Button(input_frame, text="Submit", font=("Inter", 12), bg="white", relief="solid", command=submit_task)
     submit_button.grid(row=4, columnspan=2, pady=10)
 
 # Function to create the home page
 def home_page():
-    global root,table
+    global root, table
     root = tk.Tk()
     root.title("Homework Tracker")
     root.geometry("1024x768")
@@ -92,25 +109,24 @@ def home_page():
     main_frame = tk.Frame(root, bg="white")
     main_frame.pack(fill="both", expand=True)
 
-    # Left Frame content
-    title_label = tk.Label(left_frame, text="Homework Tracker™", font=("Inter", 20  , "bold"), bg="#FFFFFF")
-    title_label.pack(pady=10)  # Adjust padding as needed
+    # Left Frame content - navigation buttons
+    title_label = tk.Label(left_frame, text="Homework Tracker™", font=("Inter", 20, "bold"), bg="#FFFFFF")
+    title_label.pack(pady=10)
     sections = ["Home", "Tasks", "Subjects", "Account", "Connected Apps", "Theme", "Report a Problem", "Help And Support", "Feedback"]
     
     for section in sections:
         button = tk.Button(left_frame, text=section, font=("Inter", 12), width=20, height=2, bg="#FFFFFF", relief="flat")
         button.pack(pady=5)
 
-
-    # Main Frame content
+    # Main Frame content - welcome message and search bar
     welcome_label = tk.Label(main_frame, text="Welcome Back Tharin", font=("Inter", 24, "bold"), bg="#FFFFFF")
-    welcome_label.place(x=20,y=20)
+    welcome_label.place(x=20, y=20)
 
     search_entry = tk.Entry(main_frame, font=("Inter", 12), width=50, relief="solid")
     search_entry.insert(0, "Quick Search")
     search_entry.place(x=790, y=20)
 
-        # Upcoming Tasks Table
+    # Upcoming Tasks Table
     table_frame = tk.Frame(main_frame, bg="white", relief="solid", bd=1)
     table_frame.place(relx=0.5, rely=0.5, anchor="center")
 
@@ -121,9 +137,9 @@ def home_page():
         table.heading(col, text=col)
         table.column(col, anchor="center", width=150)
     
-        table.pack()
+    table.pack()
 
-        # Increase font size for rows and columns
+    # Increase font size for rows and columns
     style = ttk.Style()
     style.configure("Treeview.Heading", font=("Inter", 14))
     style.configure("Treeview", font=("Inter", 12), rowheight=30)
@@ -138,25 +154,25 @@ def home_page():
     for task in tasks:
         table.insert("", "end", values=task)
 
-    # Set A Reminder button to Add Task button
-    add_task_button = tk.Button(main_frame, text="Add Task", font=("Inter", 12), bg="black", fg="white",  width=20, relief="flat", command=add_task_window)
+    # Add Task button
+    add_task_button = tk.Button(main_frame, text="Add Task", font=("Inter", 12), bg="black", fg="white", width=20, relief="flat", command=add_task_window)
     add_task_button.place(relx=0.26, rely=0.7)
 
+    # Edit Task button
     edit_task_button = tk.Button(main_frame, text="Edit Task", font=("Inter", 12), bg="white", width=10, relief="solid")
     edit_task_button.place(relx=0.26, rely=0.95)
 
-    logout_button = tk.Button(main_frame, text="Logout", font=("Inter", 12), bg="white", relief="solid",)
+    # Logout button
+    logout_button = tk.Button(main_frame, text="Logout", font=("Inter", 12), bg="white", relief="solid")
     logout_button.place(relx=0.94, rely=0.95)
 
     root.mainloop
-
-
 
 # Set up the login window
 login_window = tk.Tk()
 login_window.title("Homework Tracker")
 login_window.geometry("1024x768")
-login_window.state('zoomed') 
+login_window.state('zoomed')
 login_window.configure(bg="white")
 
 # Set up fonts and styles
@@ -168,7 +184,7 @@ button_font = ("Inter", 15, "bold")
 
 # Title
 title_label = tk.Label(login_window, text="Homework Tracker™", font=title_font, bg="white")
-title_label.place(x=21, y=0,)
+title_label.place(x=21, y=0)
 
 email_label = tk.Label(login_window, text="Login", font=bold_label_font, bg="white")
 email_label.place(relx=0.5, rely=0.29, anchor='center')
@@ -177,45 +193,35 @@ email_label.place(relx=0.5, rely=0.29, anchor='center')
 email_label = tk.Label(login_window, text="Enter your email and password to login for this app", font=label_font, bg="white")
 email_label.place(relx=0.5, rely=0.35, anchor='center')
 
-email_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid" ,fg="#828282" )
+email_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", fg="#828282")
 email_entry.insert(0, "email@domain.com")
 email_entry.place(relx=0.5, rely=0.4, anchor='center')
 
-password_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", show="*" , fg="#828282" )
+password_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", show="*", fg="#828282")
 password_entry.insert(0, "enter password")
 password_entry.place(relx=0.5, rely=0.45, anchor='center')
 
-login_button = tk.Button(login_window, text="Login with email", font=button_font, bg="black", fg="white", width=36, command=login_with_email)
-login_button.place(relx=0.5, rely=0.5, anchor='center')
-
-separator_label = tk.Label(login_window, text="---------------- or continue as a guest ----------------", font=label_font, bg="white", fg="#828282")
-separator_label.place(relx=0.5, rely=0.55, anchor='center')
-
-guest_button = tk.Button(login_window, text="Guest", font=button_font, bg="lightgrey", width=36, command=login_as_guest)
-guest_button.place(relx=0.5, rely=0.6, anchor='center')
-
-tos_label = tk.Label(login_window, text="By continuing, you agree to our Terms of Service and Privacy Policy", font=("Helvetica", 10), bg="white")
-tos_label.place(relx=0.5, rely=0.65, anchor='center')
-
-
+# Function to handle email login
 def login_with_email():
     email = email_entry.get()
     password = password_entry.get()
 
+    # Validate email and password against stored users
     for user in users:
         if user['email'] == email and user['password'] == password:
             messagebox.showinfo("Success", "Login successful!")
-            login_window.destroy()  # Destroy the login window
-            home_page()  # Call the home page function
+            login_window.destroy()  # Close the login window
+            home_page()  # Open the home page
             return
 
+    # Show error if login fails
     messagebox.showerror("Error", "Invalid email or password!")
-    
+
+# Function to handle guest login
 def guest_login_action():
     messagebox.showinfo("Guest", "Continuing as guest.")
     login_as_guest()
 
-    
 # Login Button
 login_button = tk.Button(login_window, text="Login with email", font=button_font, bg="black", fg="white", width=36, command=login_with_email)
 login_button.place(relx=0.5, rely=0.5, anchor='center')
@@ -225,7 +231,6 @@ separator_label = tk.Label(login_window, text="---------------- or continue as a
 separator_label.place(relx=0.5, rely=0.55, anchor='center')
 
 # Guest Button
-# Guest Button
 guest_button = tk.Button(login_window, text="Guest", font=button_font, bg="lightgrey", width=36, command=guest_login_action)
 guest_button.place(relx=0.5, rely=0.6, anchor='center')
 
@@ -233,7 +238,9 @@ guest_button.place(relx=0.5, rely=0.6, anchor='center')
 tos_label = tk.Label(login_window, text="By continuing, you agree to our Terms of Service and Privacy Policy", font=("Helvetica", 10), bg="white")
 tos_label.place(relx=0.5, rely=0.65, anchor='center')
 
+# Function to display the sign-up window
 def show_signup_window():
+    # Create a new top-level window for sign-up
     signup_window = tk.Toplevel(login_window)
     signup_window.title("Sign Up")
     signup_window.geometry("1024x768")
@@ -259,27 +266,33 @@ def show_signup_window():
     signup_confirm_password_entry = tk.Entry(signup_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", show="*")
     signup_confirm_password_entry.place(relx=0.5, rely=0.45, anchor='center')
 
+    # Function to handle sign-up
     def signup():
         email = signup_email_entry.get()
         password = signup_password_entry.get()
         confirm_password = signup_confirm_password_entry.get()
 
+        # Check if passwords match
         if password != confirm_password:
             messagebox.showerror("Error", "Passwords do not match!")
             return
 
+        # Check if email already exists
         for user in users:
             if user['email'] == email:
                 messagebox.showerror("Error", "Email already exists!")
                 return
 
+        # Add the new user to the list and save to file
         users.append({'email': email, 'password': password})
         with open(credentials_file, 'w') as file:
             json.dump(users, file)
 
+        # Show success message and close sign-up window
         messagebox.showinfo("Success", "Account created successfully!")
         signup_window.destroy()
 
+    # Sign Up button
     signup_button = tk.Button(signup_window, text="Sign Up", font=button_font, bg="black", fg="white", width=36, command=signup)
     signup_button.place(relx=0.5, rely=0.55, anchor='center')
 
@@ -287,20 +300,19 @@ def show_signup_window():
 signup_button = tk.Button(login_window, text="Sign Up", font=button_font, bg="black", fg="white", width=36, command=show_signup_window)
 signup_button.place(relx=0.5, rely=0.7, anchor='center')
 
-#add image to bottom right
+# Function to add an image to the bottom left
 def add_image():
     # Create a PhotoImage object from an image file
-    image = tk.PhotoImage(file="123.png")  
-
-    
+    image = tk.PhotoImage(file="123.png")
 
     # Create a label to display the image
     image_label = tk.Label(login_window, image=image, bg="white")
-    image_label.image = image  
+    image_label.image = image  # Keep a reference to the image
 
-    # Position the image at the bottom right
+    # Position the image at the bottom left
     image_label.place(relx=0.0, rely=1.0, anchor='sw', x=0, y=0)
 
+# Add the image to the login window
 add_image()
 
 # Run the Tkinter event loop
