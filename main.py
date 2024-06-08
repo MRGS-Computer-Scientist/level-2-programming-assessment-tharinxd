@@ -185,7 +185,7 @@ button_font = ("Inter", 15, "bold")
 
 # Title
 title_label = tk.Label(login_window, text="Homework Tracker™", font=title_font, bg="white")
-title_label.place(x=21, y=0)
+title_label.place(x=21, y=21)
 
 email_label = tk.Label(login_window, text="Login", font=bold_label_font, bg="white")
 email_label.place(relx=0.5, rely=0.29, anchor='center')
