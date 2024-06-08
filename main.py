@@ -1,4 +1,5 @@
 from tkinter import *
+from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import messagebox, simpledialog
 from tkinter import ttk
@@ -302,15 +303,23 @@ signup_button.place(relx=0.5, rely=0.7, anchor='center')
 
 # Function to add an image to the bottom left
 def add_image():
-    # Create a PhotoImage object from an image file
-    image = tk.PhotoImage(file="123.png")
+    # Open the image using PIL
+    image_path = "123.png"
+    image = Image.open(image_path)
+
+    # Resize the image to fit the design (optional, based on your requirements)
+    image = image.resize((350, 350), Image.LANCZOS)
+
+    # Create a PhotoImage object from the image
+    photo_image = ImageTk.PhotoImage(image)
 
     # Create a label to display the image
-    image_label = tk.Label(login_window, image=image, bg="white")
-    image_label.image = image  # Keep a reference to the image
+    image_label = tk.Label(login_window, image=photo_image, bg="white")
+    image_label.image = photo_image  # Keep a reference to the image
 
     # Position the image at the bottom left
-    image_label.place(relx=0.0, rely=1.0, anchor='sw', x=0, y=0)
+    image_label.place(relx=0.0, rely=1.0, anchor='sw', x=20, y=-20)
+
 
 # Add the image to the login window
 add_image()
