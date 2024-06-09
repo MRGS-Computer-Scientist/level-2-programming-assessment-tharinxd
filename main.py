@@ -166,6 +166,7 @@ def home_page():
     # Logout button
     logout_button = tk.Button(main_frame, text="Logout", font=("Inter", 12), bg="white", relief="solid")
     logout_button.place(relx=0.94, rely=0.95)
+    
 
     root.mainloop
 
@@ -177,30 +178,36 @@ login_window.state('zoomed')
 login_window.configure(bg="white")
 
 # Set up fonts and styles
-title_font = ("Inter", 35, "bold")
-bold_label_font = ("Inter", 25, "bold")
+title_font = ("Inter", 32, "bold")
+bold_label_font = ("Inter", 24, "bold")
 label_font = ("Inter", 15)
-entry_font = ("Inter", 15)
+entry_font = ("Inter", 18)
 button_font = ("Inter", 15, "bold")
+
 
 # Title
 title_label = tk.Label(login_window, text="Homework Tracker™", font=title_font, bg="white")
 title_label.place(x=21, y=21)
 
 email_label = tk.Label(login_window, text="Login", font=bold_label_font, bg="white")
-email_label.place(relx=0.5, rely=0.29, anchor='center')
+email_label.place(relx=0.47, rely=0.23, anchor='center')
+
+email_label = tk.Label(login_window, text="Dont Have An Account?", font=button_font, bg="white")
+email_label.place( relx=0.92, rely=0.90, anchor='center')
 
 # Email and Password Labels and Entries
 email_label = tk.Label(login_window, text="Enter your email and password to login for this app", font=label_font, bg="white")
-email_label.place(relx=0.5, rely=0.35, anchor='center')
+email_label.place(relx=0.47, rely=0.28, anchor='center')
 
-email_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", fg="#828282")
+email_entry = tk.Entry(login_window, font=entry_font, width=35, borderwidth=0.5, relief="solid", fg="#828282")
 email_entry.insert(0, "email@domain.com")
-email_entry.place(relx=0.5, rely=0.4, anchor='center')
+email_entry.place(relx=0.47, rely=0.34, anchor='center', height=40)
 
-password_entry = tk.Entry(login_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", show="*", fg="#828282")
+password_entry = tk.Entry(login_window, font=entry_font, width=35, relief="solid", show="*", fg="#828282")
 password_entry.insert(0, "enter password")
-password_entry.place(relx=0.5, rely=0.45, anchor='center')
+password_entry.place(relx=0.47, rely=0.40, anchor='center',height=40)
+
+
 
 # Function to handle email login
 def login_with_email():
@@ -224,20 +231,31 @@ def guest_login_action():
     login_as_guest()
 
 # Login Button
-login_button = tk.Button(login_window, text="Login with email", font=button_font, bg="black", fg="white", width=36, command=login_with_email)
-login_button.place(relx=0.5, rely=0.5, anchor='center')
+login_button = tk.Button(login_window, text="Login with email", font=button_font, bg="black", fg="white", width=38, command=login_with_email)
+login_button.place(relx=0.47, rely=0.46, anchor='center')
 
 # Separator
-separator_label = tk.Label(login_window, text="---------------- or continue as a guest ----------------", font=label_font, bg="white", fg="#828282")
-separator_label.place(relx=0.5, rely=0.55, anchor='center')
+separator_label = tk.Label(login_window, text="----------------- or continue as a guest ------------------", font=label_font, bg="white", fg="#828282")
+separator_label.place(relx=0.47, rely=0.53, anchor='center')
 
 # Guest Button
-guest_button = tk.Button(login_window, text="Guest", font=button_font, bg="lightgrey", width=36, command=guest_login_action)
-guest_button.place(relx=0.5, rely=0.6, anchor='center')
+guest_button = tk.Button(login_window, text="Guest", font=button_font, bg="lightgrey", width=38, command=guest_login_action)
+guest_button.place(relx=0.47, rely=0.59, anchor='center')
 
 # Terms of Service and Privacy Policy
-tos_label = tk.Label(login_window, text="By continuing, you agree to our Terms of Service and Privacy Policy", font=("Helvetica", 10), bg="white")
-tos_label.place(relx=0.5, rely=0.65, anchor='center')
+tos_label = tk.Label(login_window, text="By continuing, you agree to our ", font=("Inter", 15), bg="white", fg="#828282")
+tos_label.place(relx=0.42, rely=0.65, anchor='center')
+
+tos_label = tk.Label(login_window, text="Terms of Service", font=("Inter", 15), bg="white")
+tos_label.place(relx=0.56, rely=0.65, anchor='center')
+
+tos_label = tk.Label(login_window, text="and", font=("Inter", 15), bg="white", fg="#828282")
+tos_label.place(relx=0.423, rely=0.68, anchor='center')
+
+tos_label = tk.Label(login_window, text="Privacy Policy", font=("Inter", 15), bg="white",)
+tos_label.place(relx=0.48, rely=0.68, anchor='center')
+
+
 
 # Function to display the sign-up window
 def show_signup_window():
@@ -298,8 +316,8 @@ def show_signup_window():
     signup_button.place(relx=0.5, rely=0.55, anchor='center')
 
 # Add a Sign Up Button to the Login Window
-signup_button = tk.Button(login_window, text="Sign Up", font=button_font, bg="black", fg="white", width=36, command=show_signup_window)
-signup_button.place(relx=0.5, rely=0.7, anchor='center')
+signup_button = tk.Button(login_window, text="Sign Up", font=button_font, bg="black", fg="white", width=15, command=show_signup_window)
+signup_button.place(relx=0.92, rely=0.95, anchor='center')
 
 # Function to add an image to the bottom left
 def add_image():
@@ -308,7 +326,7 @@ def add_image():
     image = Image.open(image_path)
 
     # Resize the image to fit the design (optional, based on your requirements)
-    image = image.resize((350, 350), Image.LANCZOS)
+    image = image.resize((360, 360), Image.LANCZOS)
 
     # Create a PhotoImage object from the image
     photo_image = ImageTk.PhotoImage(image)
@@ -318,7 +336,7 @@ def add_image():
     image_label.image = photo_image  # Keep a reference to the image
 
     # Position the image at the bottom left
-    image_label.place(relx=0.0, rely=1.0, anchor='sw', x=20, y=-20)
+    image_label.place(relx=0.030, rely=0.97, anchor='sw')
 
 
 # Add the image to the login window
