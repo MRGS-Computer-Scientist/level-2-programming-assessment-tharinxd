@@ -48,99 +48,104 @@ def login_as_guest():
 
 # Function to create the home page
 def home_page():
-  global root, table
+  global root, table, current_section
 
   # Create the root window
   root = tk.Tk()
   root.title("Homework Tracker")
-  root.geometry("1024x768")
+  # Get screen width and height
+  screen_width = root.winfo_screenwidth()
+  screen_height = root.winfo_screenheight()
 
-  canvas = tk.Canvas(root, width=1024, height=768)
-  canvas.pack(fill="both", expand=True)
 
-  bg_image_path = "images/yeamannn.png"
-  if os.path.exists(bg_image_path):
-    try:
-      bg_image = Image.open(bg_image_path)
-      bg_image = bg_image.resize((1920, 1080), Image.BICUBIC)  # Ensure resize matches canvas size
-      photo_bg = ImageTk.PhotoImage(bg_image)
-      canvas.create_image(0, 0, image=photo_bg, anchor='nw')
-      canvas.image = photo_bg  # Keep a reference to the image
-    except Exception as e:
-      messagebox.showerror("Image Load Error", f"Failed to load background image: {e}")
-  else:
-    messagebox.showerror("File Not Found", f"Background image not found at {bg_image_path}")
+  initial_width = int(screen_width * 1)
+  initial_height = int(screen_height * 1)
+  root.geometry(f"{initial_width}x{initial_height}")
+  root.resizable(True, True)
+  root.config(bg="#74a9dd")
 
-    # Create a frame to hold the widgets and place it on the canvas
-    main_frame = tk.Frame(canvas, bg="white")
-    canvas.create_window((0, 0), window=main_frame, anchor="nw")
+
+# Create the left frame for navigation
+  left_frame = tk.Frame(root, bg="#E0E0E0",)
+  left_frame.place(x=0, y=0, relheight=1, width=320)
+
+  # Create the main frame for content
+  main_frame = tk.Frame(root, bg="#74a9dd" )
+  main_frame.place(x=320, y=0, relwidth=1 ,relheight=1)
+  
+  # Create the title label
+  title_label = tk.Label(left_frame, text="Homework Tracker™", font=("Inter", 20, "bold"), bg="#E0E0E0")
+  title_label.pack(pady=10)
     
-     # Left Frame for navigation
-    left_frame = tk.Frame(root, bg="#FFFFFF", width=210)
-    left_frame.pack(fill="y", side="left")
+  sections = ["Home", "Tasks", "Subjects", "Account", "Connected Apps", "Theme", "Report a Problem", "Help And Support", "Feedback"]
 
-    # Main Frame for content
-    main_frame = tk.Frame(root, bg="white")
-    main_frame.pack(fill="both", expand=True)
+    # Global variable to track the current section
+  current_section = "Home"
 
-    # Left Frame content - navigation buttons
-    title_label = tk.Label(left_frame, text="Homework Tracker™", font=("Inter", 20, "bold"), bg="#FFFFFF")
-    title_label.pack(pady=10)
-    sections = ["Home", "Tasks", "Subjects", "Account", "Connected Apps", "Theme", "Report a Problem", "Help And Support", "Feedback"]
+    # Function to update button styles
+  def update_button_styles():
+      for button in buttons:
+          if button['text'] == current_section:
+              button.config(bg="#A9A9A9")  # Highlighted color
+          else:
+              button.config(bg="#FFFFFF")  # Default color
+
+        # Create buttons for each section and make them functional
+  buttons = []
+  for section in sections:
+      button = tk.Button(left_frame, text=section, font=("Inter", 14), width=30, height=2, bg="#FFFFFF", relief="flat",
+                         command=lambda sec=section: open_section(sec))
+      button.pack(pady=5)
+      buttons.append(button)
+
+  update_button_styles()   
+
+
+  search_entry = tk.Entry(main_frame, font=("Inter", 12), width=50, relief="solid")
+  search_entry.insert(0, "Quick Search")
+  search_entry.place(x=670, y=20)
+
+  # Upcoming Tasks Table
+  table_frame = tk.Frame(main_frame, bg="white", relief="solid", bd=1)
+  table_frame.place(relx=0.4, rely=0.5, anchor="center")
+
+  columns = ["Subject", "Task", "Due Date", "Time"]
+  table = ttk.Treeview(table_frame, columns=columns, show='headings', height=8)
     
-    for section in sections:
-        button = tk.Button(left_frame, text=section, font=("Inter", 12), width=20, height=2, bg="#FFFFFF", relief="flat")
-        button.pack(pady=5)
-
-    # Main Frame content - welcome message and search bar
-    welcome_label = tk.Label(main_frame, text="Welcome Back Tharin", font=("Inter", 24, "bold"), bg="#FFFFFF")
-    welcome_label.place(x=20, y=20)
-
-    search_entry = tk.Entry(main_frame, font=("Inter", 12), width=50, relief="solid")
-    search_entry.insert(0, "Quick Search")
-    search_entry.place(x=790, y=20)
-
-    # Upcoming Tasks Table
-    table_frame = tk.Frame(main_frame, bg="white", relief="solid", bd=1)
-    table_frame.place(relx=0.5, rely=0.5, anchor="center")
-
-    columns = ["Subject", "Task", "Due Date", "Time"]
-    table = ttk.Treeview(table_frame, columns=columns, show='headings', height=8)
+  for col in columns:
+      table.heading(col, text=col)
+      table.column(col, anchor="center", width=250)
     
-    for col in columns:
-        table.heading(col, text=col)
-        table.column(col, anchor="center", width=150)
-    
-    table.pack()
+  table.pack()
 
-    # Increase font size for rows and columns
-    style = ttk.Style()
-    style.configure("Treeview.Heading", font=("Inter", 14))
-    style.configure("Treeview", font=("Inter", 12), rowheight=30)
+  # Increase font size for rows and columns
+  style = ttk.Style()
+  style.configure("Treeview.Heading", font=("Inter", 14))
+  style.configure("Treeview", font=("Inter", 12), rowheight=30)
 
-    # Sample tasks
-    tasks = [
+  # Sample tasks
+  tasks = [
         ("Physics", "ESA Chapter 10", "12/04/24", "8:00 P.M"),
         ("Maths", "Stats Mock", "5/04/24", "11:59 P.M"),
         ("English", "Novel Questions", "15/05/24", "TBD")
     ]
 
-    for task in tasks:
-        table.insert("", "end", values=task)
+  for task in tasks:
+      table.insert("", "end", values=task)
 
-    # Add Task button
-    add_task_button = tk.Button(main_frame, text="Add Task", font=("Inter", 12), bg="black", fg="white", width=20, relief="flat", command=add_task_window)
-    add_task_button.place(relx=0.26, rely=0.7)
+  # Add Task button
+  add_task_button = tk.Button(main_frame, text="Add Task", font=("Inter", 12), bg="black", fg="white", width=20, relief="flat", command=add_task_window)
+  add_task_button.place(relx=0.0, rely=0.7)
 
-    # Edit Task button
-    edit_task_button = tk.Button(main_frame, text="Edit Task", font=("Inter", 12), bg="white", width=10, relief="solid")
-    edit_task_button.place(relx=0.26, rely=0.95)
+  # Edit Task button
+  edit_task_button = tk.Button(main_frame, text="Edit Task", font=("Inter", 12), bg="white", width=10, relief="solid")
+  edit_task_button.place(relx=0.26, rely=0.95)
 
-    # Logout button
-    logout_button = tk.Button(main_frame, text="Logout", font=("Inter", 12), bg="white", relief="solid")
-    logout_button.place(relx=0.94, rely=0.95)
+  # Logout button
+  logout_button = tk.Button(main_frame, text="Logout", font=("Inter", 12), bg="white", relief="solid", command=lambda: [root.destroy(), show_login_window()])
+  logout_button.place(x=1000, y=800)
     
-    root.mainloop ()
+  root.mainloop () 
     
     # Function to display the window for adding a new task
 def add_task_window():
@@ -156,6 +161,8 @@ def add_task_window():
             table.insert("", "end", values=(subject, task, due_date, time))
             # Close the add task window
             add_window.destroy()
+            
+            
 
     # Create a new top-level window for adding a task
     add_window = tk.Toplevel(root)
@@ -191,9 +198,67 @@ def add_task_window():
     submit_button = tk.Button(input_frame, text="Submit", font=("Inter", 12), bg="white", relief="solid", command=submit_task)
     submit_button.grid(row=4, columnspan=2, pady=10)
     
+def open_section(section):
+    global root, current_section
+    # Destroy the current window
+    root.destroy()
+    # Create a new window for the section
+    root = tk.Tk()
+    root.title(section)
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    initial_width = int(screen_width * 1)
+    initial_width = int(screen_width * 1)
+    initial_height = int(screen_height * 1)
+    root.geometry(f"{initial_width}x{initial_height}")
+    root.config(bg="#74a9dd")
+    
+    # Create the left frame for navigation in the new window
+    left_frame = tk.Frame(root, bg="#E0E0E0")
+    left_frame.place(x=0, y=0, relheight=1, width=320)
+        
+        # Create the main frame for content in the new window
+    main_frame = tk.Frame(root, bg="#74a9dd")
+    main_frame.place(x=320, y=0, relwidth=1, relheight=1)
+
+    # Create the title label in the new window
+    title_label = tk.Label(left_frame, text="Homework Tracker™", font=("Inter", 20, "bold"), bg="#E0E0E0")
+    title_label.pack(pady=10)
+
+    sections = ["Home", "Tasks", "Subjects", "Account", "Connected Apps", "Theme", "Report a Problem", "Help And Support", "Feedback"]
+    
+    # Update the current section
+    current_section = section
+
+    # Function to update button styles
+    def update_button_styles():
+        for button in buttons:
+            if button['text'] == current_section:
+                button.config(bg="#A9A9A9")  # Highlighted color
+            else:
+                button.config(bg="#FFFFFF")  # Default color
+
+    # Create buttons for each section in the new window
+    buttons = []
+    for sec in sections:
+        button = tk.Button(left_frame, text=sec, font=("Inter", 14), width=30, height=2, bg="#FFFFFF", relief="flat",
+                           command=lambda s=sec: open_section(s))
+        button.pack(pady=5)
+        buttons.append(button)
+
+    update_button_styles()
+    
+    # Main frame content - section title
+    section_label = tk.Label(main_frame, text=section, font=("Inter", 24, "bold"), bg="#74a9dd")
+    section_label.place(x=54, y=2)
+    
+    # Ensure the "Home" button reloads the original home page
+    if section == "Home":
+        home_page()
 
     
-
+def show_login_window():
+    global login_window
 # Set up the login window
 login_window = tk.Tk()
 login_window.title("Homework Tracker")
