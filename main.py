@@ -199,7 +199,7 @@ def add_task_window():
     submit_button.grid(row=4, columnspan=2, pady=10)
     
 def open_section(section):
-    global root, current_section
+    global current_section,root
     # Destroy the current window
     root.destroy()
     # Create a new window for the section
@@ -229,6 +229,8 @@ def open_section(section):
     
     # Update the current section
     current_section = section
+    
+    
 
     # Function to update button styles
     def update_button_styles():
