@@ -65,7 +65,7 @@ def home_page():
   root.config(bg="#74a9dd")
 
 
-# Create the left frame for navigation
+  # Create the left frame for navigation
   left_frame = tk.Frame(root, bg="#E0E0E0",)
   left_frame.place(x=0, y=0, relheight=1, width=320)
 
