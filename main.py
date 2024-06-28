@@ -47,7 +47,7 @@ def login_as_guest():
 
 
 # Function to create the home page
-def home_page():
+def home_page(background):
   global root, table, current_section
 
   # Create the root window
@@ -62,7 +62,20 @@ def home_page():
   initial_height = int(screen_height * 1)
   root.geometry(f"{initial_width}x{initial_height}")
   root.resizable(True, True)
-  root.config(bg="#74a9dd")
+# Open the background image using PIL
+  image_path = background
+  image = Image.open(image_path)
+
+
+  image = image.resize((initial_width, initial_height), Image.LANCZOS)
+
+# Create a PhotoImage object from the image
+  photo_image = ImageTk.PhotoImage(image)
+
+    # Create a label to display the image
+  background_label = tk.Label(root, image=photo_image)
+  background_label.image = photo_image  # Keep a reference to the image
+  background_label.place(relx=0, rely=0, relwidth=1, relheight=1)
 
 
   # Create the left frame for navigation
@@ -136,6 +149,8 @@ def home_page():
   # Add Task button
   add_task_button = tk.Button(main_frame, text="Add Task", font=("Inter", 12), bg="black", fg="white", width=20, relief="flat", command=add_task_window)
   add_task_button.place(relx=0.0, rely=0.7)
+
+  
 
   # Edit Task button
   edit_task_button = tk.Button(main_frame, text="Edit Task", font=("Inter", 12), bg="white", width=10, relief="solid")
