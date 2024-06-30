@@ -15,11 +15,27 @@ except FileNotFoundError:
     users = []
 
 class MainApplication(tk.Tk):
+    def __init__(self, login_window):
+        tk.Tk.__init__(self)
+        self.login_window = login_window 
     def __init__(self):
         tk.Tk.__init__(self)
         self.title("Homework Tracker")
-        self.geometry("1280x720")
-        self.config(bg="#74a9dd")
+        self.geometry("1024x768")
+        self.state('zoomed')
+        self._frame = None
+        self.switch_frame(HomeFrame)
+
+
+        
+        # Load the background image
+        image_path = "background.png"  
+        image = Image.open(image_path)
+        photo = ImageTk.PhotoImage(image)
+
+        # Create a label to display the image
+        background_label = tk.Label(self, image=photo)
+        background_label.place(x=0, y=0, relwidth=1,relheight=1)
 
         self.sidebar = tk.Frame(self, width=320, bg='#E0E0E0')
         self.sidebar.pack(expand=False, fill='y', side='left', anchor='nw')
@@ -32,7 +48,7 @@ class MainApplication(tk.Tk):
 
         self.buttons = []
         for section in sections:
-            button = tk.Button(self.sidebar, text=section, font=("Inter", 14), width=30, height=2, bg="#FFFFFF", relief="flat", command=lambda s=section: self.show_frame(s))
+            button = tk.Button(self.sidebar, text=section, font=("Inter", 14, "bold"), width=30, height=2, bg="#FFFFFF", relief="flat", command=lambda s=section: self.show_frame(s))
             button.pack(pady=5)
             self.buttons.append(button)
 
@@ -51,6 +67,13 @@ class MainApplication(tk.Tk):
         self.show_frame(section)
         if section == "Tasks":
             self.frames[section].update_tasks_table()
+            
+    def switch_frame(self, frame_class):
+        new_frame = frame_class(self)
+        if self._frame is not None:
+            self._frame.destroy()
+            self._frame = new_frame
+            self._frame.pack()
 
     def create_frames(self):
         for section in sections:
@@ -238,7 +261,7 @@ def show_signup_window(users, login_window):
         app = MainApplication()
         app.run()
 
-    signup_button = tk.Button(signup_window, text="Sign Up", font=button_font, bg="black", fg="white", width=36, command=signup)
+    signup_button = tk.Button(signup_window, text="Sign Up", font=button_font, bg="", fg="white", width=36, command=signup)
     signup_button.place(relx=0.5, rely=0.55, anchor='center')
 
     signup_window.mainloop()
