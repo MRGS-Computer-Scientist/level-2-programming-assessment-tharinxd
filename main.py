@@ -15,9 +15,6 @@ except FileNotFoundError:
     users = []
 
 class MainApplication(tk.Tk):
-    def __init__(self, login_window):
-        tk.Tk.__init__(self)
-        self.login_window = login_window 
     def __init__(self):
         tk.Tk.__init__(self)
         self.title("Homework Tracker")
@@ -61,7 +58,11 @@ class MainApplication(tk.Tk):
 
         self.current_section = "Home"
         self.update_button_styles()
-        self.show_frame("Home")
+        self.show_frame("Home") 
+        
+    def show_login_window(self):
+        self.destroy()  # Close the main application window
+        show_login_window(users)  # Show the login window
 
     def show_frame_and_update_tasks(self, section):
         self.show_frame(section)
@@ -115,15 +116,16 @@ def login_with_email(email_entry, password_entry, users, login_window):
             messagebox.showinfo("Success", "Login successful!")
             login_window.destroy()
             app = MainApplication()
-            app.run()
+            app.mainloop()
             return
     messagebox.showerror("Error", "Invalid email or password!")
 
+# Adjust the login_as_guest function similarly
 def login_as_guest(login_window):
     messagebox.showinfo("Guest", "Continuing as guest.")
     login_window.destroy()
     app = MainApplication()
-    app.run()
+    app.mainloop()
 
 def show_login_window(users):
     login_window = tk.Tk()
@@ -261,7 +263,7 @@ def show_signup_window(users, login_window):
         app = MainApplication()
         app.run()
 
-    signup_button = tk.Button(signup_window, text="Sign Up", font=button_font, bg="", fg="white", width=36, command=signup)
+    signup_button = tk.Button(signup_window, text="Sign Up", font=button_font, bg="black", fg="white", width=36, command=signup)
     signup_button.place(relx=0.5, rely=0.55, anchor='center')
 
     signup_window.mainloop()
