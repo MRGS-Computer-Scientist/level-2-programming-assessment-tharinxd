@@ -4,8 +4,9 @@ from PIL import Image, ImageTk
 import json
 from home import HomeFrame
 from tasks import TasksFrame
+from help_support import Help_SupportFrame
 
-sections = ["Home", "Tasks", "Subjects", "Account", "Connected Apps", "Theme", "Report a Problem", "Help And Support", "Feedback"]
+sections = ["Home", "Tasks", "Subjects", "Account", "Theme", "Report a Problem", "Help And Support", "Feedback"]
 credentials_file = "credentials.json"
 
 try:
@@ -23,16 +24,14 @@ class MainApplication(tk.Tk):
         self._frame = None
         self.switch_frame(HomeFrame)
 
-
-        
         # Load the background image
-        image_path = "background.png"  
+        image_path = "background.png"
         image = Image.open(image_path)
         photo = ImageTk.PhotoImage(image)
 
         # Create a label to display the image
         background_label = tk.Label(self, image=photo)
-        background_label.place(x=0, y=0, relwidth=1,relheight=1)
+        background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         self.sidebar = tk.Frame(self, width=320, bg='#E0E0E0')
         self.sidebar.pack(expand=False, fill='y', side='left', anchor='nw')
@@ -58,8 +57,8 @@ class MainApplication(tk.Tk):
 
         self.current_section = "Home"
         self.update_button_styles()
-        self.show_frame("Home") 
-        
+        self.show_frame("Home")
+
     def show_login_window(self):
         self.destroy()  # Close the main application window
         show_login_window(users)  # Show the login window
@@ -68,7 +67,7 @@ class MainApplication(tk.Tk):
         self.show_frame(section)
         if section == "Tasks":
             self.frames[section].update_tasks_table()
-            
+
     def switch_frame(self, frame_class):
         new_frame = frame_class(self)
         if self._frame is not None:
@@ -82,11 +81,11 @@ class MainApplication(tk.Tk):
                 self.frames[section] = HomeFrame(self.main_content)
             elif section == "Tasks":
                 self.frames[section] = TasksFrame(self.main_content)
+            elif section == "Help And Support":
+                self.frames[section] = Help_SupportFrame(self.main_content)  # Add this line
             else:
                 self.frames[section] = ttk.Frame(self.main_content)
             self.frames[section].pack(fill='both', expand=True)  # Pack the frame here
-
-        # Add the other frames here
 
     def show_frame(self, section):
         for sec in sections:
@@ -191,18 +190,17 @@ def show_login_window(users):
         image_path = "123.png"
         image = Image.open(image_path)
 
-        # Resize the image to fit the design (optional, based on your requirements)
-        image = image.resize((360, 360), Image.LANCZOS)
+        
+        desired_size = (300, 300)
+        image = image.resize(desired_size, Image.LANCZOS)
 
-        # Create a PhotoImage object from the image
-        photo_image = ImageTk.PhotoImage(image)
+        # Convert the image to a Tkinter-compatible format
+        photo = ImageTk.PhotoImage(image)
 
         # Create a label to display the image
-        image_label = tk.Label(login_window, image=photo_image, bg="white")
-        image_label.image = photo_image  # Keep a reference to the image
-
-        # Position the image at the bottom left
-        image_label.place(relx=0.030, rely=0.97, anchor='sw')
+        image_label = tk.Label(login_window, image=photo, bg="white")
+        image_label.image = photo  # Keep a reference to avoid garbage collection
+        image_label.place(relx=0.10, rely=0.85, anchor='center')
 
     # Add the image to the login window
     add_image()
@@ -221,51 +219,79 @@ def show_signup_window(users, login_window):
     entry_font = ("Inter", 18)
     button_font = ("Inter", 15, "bold")
 
-    signup_title_label = tk.Label(signup_window, text="Sign Up", font=title_font, bg="white")
-    signup_title_label.place(relx=0.5, rely=0.1, anchor='center')
+    title_label = tk.Label(signup_window, text="Homework Tracker™", font=title_font, bg="white")
+    title_label.place(x=21, y=21)
 
-    signup_email_label = tk.Label(signup_window, text="Email", font=label_font, bg="white")
-    signup_email_label.place(relx=0.5, rely=0.2, anchor='center')
-    signup_email_entry = tk.Entry(signup_window, font=entry_font, width=40, borderwidth=0.5, relief="solid")
-    signup_email_entry.place(relx=0.5, rely=0.25, anchor='center')
+    signup_label = tk.Label(signup_window, text="Sign Up", font=("Inter", 24, "bold"), bg="white")
+    signup_label.place(relx=0.47, rely=0.23, anchor='center')
 
-    signup_password_label = tk.Label(signup_window, text="Password", font=label_font, bg="white")
-    signup_password_label.place(relx=0.5, rely=0.3, anchor='center')
-    signup_password_entry = tk.Entry(signup_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", show="*")
-    signup_password_entry.place(relx=0.5, rely=0.35, anchor='center')
+    email_instruction_label = tk.Label(signup_window, text="Enter your email to sign up for this app", font=label_font, bg="white")
+    email_instruction_label.place(relx=0.47, rely=0.28, anchor='center')
 
-    signup_confirm_password_label = tk.Label(signup_window, text="Confirm Password", font=label_font, bg="white")
-    signup_confirm_password_label.place(relx=0.5, rely=0.4, anchor='center')
-    signup_confirm_password_entry = tk.Entry(signup_window, font=entry_font, width=40, borderwidth=0.5, relief="solid", show="*")
-    signup_confirm_password_entry.place(relx=0.5, rely=0.45, anchor='center')
+    email_entry = tk.Entry(signup_window, font=entry_font, width=35, borderwidth=0.5, relief="solid", fg="#828282")
+    email_entry.insert(0, "email@domain.com")
+    email_entry.place(relx=0.47, rely=0.34, anchor='center', height=40)
+
+    name_entry = tk.Entry(signup_window, font=entry_font, width=35, borderwidth=0.5, relief="solid", fg="#828282")
+    name_entry.insert(0, "Username")
+    name_entry.place(relx=0.47, rely=0.40, anchor='center', height=40)
+
+    password_label = tk.Label(signup_window, text="Create Password", font=label_font, bg="white")
+    password_label.place(relx=0.47, rely=0.46, anchor='center')
+
+    password_entry = tk.Entry(signup_window, font=entry_font, width=35, relief="solid", show="*", fg="#828282")
+    password_entry.insert(0, "enter password")
+    password_entry.place(relx=0.47, rely=0.50, anchor='center', height=40)
+
+    confirm_password_label = tk.Label(signup_window, text="Confirm Password", font=label_font, bg="white")
+    confirm_password_label.place(relx=0.47, rely=0.56, anchor='center')
+
+    confirm_password_entry = tk.Entry(signup_window, font=entry_font, width=35, relief="solid", show="*", fg="#828282")
+    confirm_password_entry.insert(0, "confirm password")
+    confirm_password_entry.place(relx=0.47, rely=0.60, anchor='center', height=40)
 
     def signup():
-        email = signup_email_entry.get()
-        password = signup_password_entry.get()
-        confirm_password = signup_confirm_password_entry.get()
-
+        name = name_entry.get()
+        email = email_entry.get()
+        password = password_entry.get()
+        confirm_password = confirm_password_entry.get()
         if password != confirm_password:
             messagebox.showerror("Error", "Passwords do not match!")
             return
 
-        for user in users:
-            if user['email'] == email:
-                messagebox.showerror("Error", "Email already exists!")
-                return
-
-        users.append({'email': email, 'password': password})
+        users.append({"name": name, "email": email, "password": password})
         with open(credentials_file, 'w') as file:
             json.dump(users, file)
-
         messagebox.showinfo("Success", "Account created successfully!")
         signup_window.destroy()
-        login_window.destroy()
-        app = MainApplication()
-        app.run()
 
-    signup_button = tk.Button(signup_window, text="Sign Up", font=button_font, bg="black", fg="white", width=36, command=signup)
-    signup_button.place(relx=0.5, rely=0.55, anchor='center')
+    signup_button = tk.Button(signup_window, text="Sign Up", font=button_font, bg="black", fg="white", width=38, command=signup)
+    signup_button.place(relx=0.47, rely=0.66, anchor='center')
+
+    login_label = tk.Label(signup_window, text="Already Have An Account?", font=button_font, bg="white")
+    login_label.place(relx=0.92, rely=0.90, anchor='center')
+
+    login_button = tk.Button(signup_window, text="Login", font=button_font, bg="black", fg="white", width=15, relief="solid", command=lambda: show_login_window(users))
+    login_button.place(relx=0.92, rely=0.95, anchor='center')
+
+    def add_image():
+        # Open the image using PIL
+        image_path = "123.png"
+        image = Image.open(image_path)
+
+        image = image.resize((340, 340), Image.LANCZOS)
+
+        # Create a PhotoImage object from the image
+        photo_image = ImageTk.PhotoImage(image)
+
+        # Create a label to display the image
+        image_label = tk.Label(signup_window, image=photo_image, bg="white")
+        image_label.image = photo_image  # Keep a reference to the image
+        image_label.place(relx=0.10, rely=0.85, anchor='center')  
+
+    add_image()  # Call the function to add the image
 
     signup_window.mainloop()
 
-show_login_window(users)
+if __name__ == "__main__":
+    show_login_window(users)

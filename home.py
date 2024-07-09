@@ -1,36 +1,50 @@
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
-import webbrowser
+
 
 class ProgressTrackerWindow(tk.Toplevel):
-    def __init__(self, parent, task):
+    def __init__(self, parent, task, home_frame, task_data):
         tk.Toplevel.__init__(self, parent)
         self.parent = parent
+        self.home_frame = home_frame
         self.task = task
-        self.current_step = 0
+        self.task_data = task_data
         self.steps = []
         self.step_vars = []
         self.create_widgets()
 
     def create_widgets(self):
         self.title(f"Progress Tracker - {self.task}")
-        self.geometry("600x400")
+        self.geometry("1920x1080")
+        
+        image_path = "background.png"  
+        image = Image.open(image_path)
+        photo = ImageTk.PhotoImage(image)
 
-        # Task label
-        tk.Label(self, text=f"Task: {self.task}", font=("Inter", 16, "bold")).pack(pady=20)
+        background_label = tk.Label(self, image=photo)
+        background_label.image = photo  # Keep a reference to the image
+        background_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+        # Top frame
+        top_frame = tk.Frame(self, bg="white")
+        top_frame.pack(pady=20)
+
 
         # Steps frame
-        self.steps_frame = tk.Frame(self)
-        self.steps_frame.pack()
+        self.steps_frame = tk.Frame(self, bg="white")
+        self.steps_frame.pack(pady=20)
 
         # Add step entry
         self.step_entry = tk.Entry(self.steps_frame, font=("Inter", 12), width=40)
-        self.step_entry.pack(pady=10)
+        self.step_entry.pack(pady=10, side="left", padx=20)
 
         # Add step button
         add_step_button = tk.Button(self.steps_frame, text="Add Step", command=self.add_step)
-        add_step_button.pack(pady=10)
+        add_step_button.pack(pady=10, side="left", padx=20)
+
+        # Display task table
+        self.create_task_table()
 
         # Complete task button
         self.complete_task_button = tk.Button(self, text="Complete Task", command=self.complete_task, state="disabled")
@@ -47,16 +61,16 @@ class ProgressTrackerWindow(tk.Toplevel):
             self.step_entry.delete(0, tk.END)
 
             step_frame = tk.Frame(self.steps_frame, relief="solid", bd=1, bg="lightblue")
-            step_frame.pack(pady=10)
+            step_frame.pack(pady=10, fill="x", expand=True)
 
             step_var = tk.BooleanVar(value=False)
             self.step_vars.append(step_var)
 
-            step_checkbox = tk.Checkbutton(step_frame, text=f"Step: {step}", variable=step_var, command=self.update_progress)
-            step_checkbox.pack(side="left")
+            step_checkbox = tk.Checkbutton(step_frame, text=f"Step: {step}", variable=step_var, command=self.update_progress, font=("Inter", 14))
+            step_checkbox.pack(side="left", padx=10, pady=10)
 
             progress_bar = ttk.Progressbar(step_frame, orient="horizontal", length=200, mode="determinate", value=0)
-            progress_bar.pack(side="left", padx=20)
+            progress_bar.pack(side="left", padx=20, pady=10)
 
             if len(self.step_vars) == 4:
                 self.complete_task_button.config(state="normal")
@@ -68,12 +82,32 @@ class ProgressTrackerWindow(tk.Toplevel):
             self.complete_task_button.config(state="disabled")
 
     def complete_task(self):
-        # Remove the task from the table
-        self.parent.parent.update_table()
-        self.destroy()
+        selected_item = self.home_frame.table.selection()  # Use the HomeFrame instance
+        if selected_item:
+            self.home_frame.table.delete(selected_item)
+            self.destroy()  # Close the ProgressTrackerWindow instance
+        else:
+            tk.messagebox.showwarning("No Task Selected", "Please select a task from the table.")
+
 
     def close_window(self):
         self.destroy()
+
+    def create_task_table(self):
+        table_frame = tk.Frame(self, bg="white", relief="solid", bd=1)
+        table_frame.pack(pady=20)
+
+        columns = ["Subject", "Task", "Due Date", "Time"]
+        task_table = ttk.Treeview(table_frame, columns=columns, show='headings', height=1)
+        
+        for col in columns:
+            task_table.heading(col, text=col)
+            task_table.column(col, anchor="center", width=150)
+        
+        task_table.pack()
+
+        task_table.insert("", tk.END, values=self.task_data)
+
 
 class SetReminderWindow(tk.Toplevel):
     def __init__(self, parent):
@@ -123,11 +157,6 @@ class HomeFrame(tk.Frame):
         image_path = "background.png"  
         image = Image.open(image_path)
         photo = ImageTk.PhotoImage(image)
-        
-        self.search_entry = tk.Entry(self, font=("Inter", 12), width=50, relief="solid")
-        self.search_entry.insert(0, "Search NZQA resources")
-        self.search_entry.place(x=700, y=20)
-        self.search_entry.bind("<Return>", self.search_handler)
 
         # Background image
         background_image = Image.open("background.png")
@@ -149,7 +178,6 @@ class HomeFrame(tk.Frame):
         self.search_entry = tk.Entry(self, font=("Inter", 12), width=50, relief="solid")
         self.search_entry.insert(0, "Quick Search")
         self.search_entry.place(x=700, y=20)
-        self.search_entry.bind("<Return>", self.search_handler)
 
         # Upcoming Tasks Table
         self.table_frame = tk.Frame(self, bg="white", relief="solid", bd=1)
@@ -177,6 +205,7 @@ class HomeFrame(tk.Frame):
         
         progress_button = tk.Button(self, text="Progress", font=("Inter", 12, "bold"), bg="white", width=15, relief="solid", command=self.progress_window)
         progress_button.place(relx=0.04, rely=0.95)
+        
 
 
         # Logout button
@@ -190,77 +219,13 @@ class HomeFrame(tk.Frame):
         heading_label.place(x=220, y=40, anchor="center")
         
     def progress_window(self):
-            # Get the selected task from the table
-            selected_item = self.table.selection()
-            if selected_item:
-                task = self.table.item(selected_item[0])["values"][1]
-                ProgressTrackerWindow(self.master, task)
-            else:
-                tk.messagebox.showwarning("No Task Selected", "Please select a task from the table.")
-
-    
-    def search_handler(self, event):
-        search_query = self.search_entry.get().strip().lower()
-        search_results = self.get_search_results(search_query)
-        self.display_search_results(search_query, search_results)
-
-    def get_search_results(self, search_query):
-        search_links = {
-            "maths": {
-                "level 1": "https://www.nzqa.govt.nz/ncea/assessment/search.do?query=math&view=exams&level=01",
-                "level 2": "https://www.nzqa.govt.nz/ncea/assessment/search.do?query=mathematics&view=all&level=02",
-                "level 3": "https://www.nzqa.govt.nz/ncea/assessment/search.do?query=mathematics&view=reports&level=03"
-            },
-            "physics": {
-                "level 1": "https://www.nzqa.govt.nz/ncea/assessment/search.do?query=physics&view=exams&level=01",
-                "level 2": "https://www.nzqa.govt.nz/ncea/assessment/search.do?query=physics&view=exams&level=02",
-                "level 3": "https://www.nzqa.govt.nz/ncea/assessment/search.do?query=physics&view=exams&level=03"
-            },
-            "english": {
-                "level 1": "https://www.nzqa.govt.nz/ncea/assessment/search.do?query=english&view=exams&level=01",
-                "level 2": "https://www.nzqa.govt.nz/ncea/assessment/search.do?query=english&view=exams&level=02",
-                "level 3": "https://www.nzqa.govt.nz/ncea/assessment/search.do?query=english&view=exams&level=03"
-            }
-        }
-        
-        results = []
-        for subject, levels in search_links.items():
-            if subject in search_query:
-                for level, link in levels.items():
-                    if level in search_query:
-                        results.append(link)
-        
-        return results
-
-    def display_search_results(self, search_query, search_results):
-        if search_results:
-            result_frame = tk.Frame(self)
-            result_frame.place(x=700, y=50)
-            
-            scrollbar = tk.Scrollbar(result_frame, orient="vertical")
-            scrollbar.pack(side="right", fill="y")
-
-            listbox = tk.Listbox(result_frame, yscrollcommand=scrollbar.set, width=100, height=10)
-            listbox.pack(side="left", fill="both")
-            scrollbar.config(command=listbox.yview)
-
-            for result in search_results:
-                listbox.insert(tk.END, result)
-
-            def open_selected_item():
-                selected_item = listbox.get(listbox.curselection())
-                webbrowser.open(selected_item)
-
-            button = tk.Button(result_frame, text="Open", command=open_selected_item)
-            button.pack()
-
-            def close_search_results():
-                result_frame.destroy()
-
-            close_button = tk.Button(result_frame, text="Close", command=close_search_results)
-            close_button.pack()
+        selected_item = self.table.selection()
+        if selected_item:
+            task_data = self.table.item(selected_item[0])["values"]
+            task = task_data[1]
+            ProgressTrackerWindow(self.master, self, task, task_data)  # Pass self as the home_frame argument
         else:
-            tk.messagebox.showinfo("No Results", f"No results found for '{search_query}'")
+            tk.messagebox.showwarning("No Task Selected", "Please select a task from the table.")
 
     def update_table(self):
         self.table.delete(*self.table.get_children())
@@ -280,7 +245,7 @@ class HomeFrame(tk.Frame):
         SetReminderWindow(self.master)
 
     def logout(self):
-        self.parent.destroy()
+        self.master.master.show_login_window()
 
 class MainApp(tk.Tk):
     def __init__(self):

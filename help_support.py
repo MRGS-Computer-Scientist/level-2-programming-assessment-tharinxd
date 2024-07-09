@@ -8,6 +8,9 @@ class Help_SupportFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        
+        
+        
         # Create widgets for the subjects section
         self.label = ttk.Label(self, text="Homework Tracker™", font=("Arial", 24, "bold"))
         self.label.pack(pady=20)
@@ -41,10 +44,9 @@ class Help_SupportFrame(tk.Frame):
         self.submit_button.pack(pady=10)
 
 
-root = tk.Tk()
-root.title("Help and Support")
-
-help_support_frame = Help_SupportFrame(root)
-help_support_frame.pack(pady=20)
-
-root.mainloop()
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("Homework Tracker")
+    root.geometry("800x600")
+    Help_SupportFrame(root).pack(fill="both", expand=True)
+    root.mainloop()
