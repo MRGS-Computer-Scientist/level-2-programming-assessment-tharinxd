@@ -255,15 +255,33 @@ def show_signup_window(users, login_window):
         email = email_entry.get()
         password = password_entry.get()
         confirm_password = confirm_password_entry.get()
-        if password != confirm_password:
-            messagebox.showerror("Error", "Passwords do not match!")
+        
+        error_label = tk.Label(signup_window, text="", font=("Inter", 12), fg="red", bg="white")
+        error_label.place(relx=0.47, rely=0.72, anchor='center')
+
+        # Password length validation
+        if not (5 <= len(password) <= 20):
+            error_label.config(text="Password should be between 5 and 20 characters.")
             return
 
+        # Email already exists validation
+        for user in users:
+            if user['email'] == email:
+                error_label.config(text="Account already exists.")
+                return
+
+        # Password match validation
+        if password != confirm_password:
+            error_label.config(text="Passwords do not match!")
+            return
+
+        # If all validations pass, create the account
         users.append({"name": name, "email": email, "password": password})
         with open(credentials_file, 'w') as file:
             json.dump(users, file)
         messagebox.showinfo("Success", "Account created successfully!")
         signup_window.destroy()
+
 
     signup_button = tk.Button(signup_window, text="Sign Up", font=button_font, bg="black", fg="white", width=38, command=signup)
     signup_button.place(relx=0.47, rely=0.66, anchor='center')
