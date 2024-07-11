@@ -1,11 +1,15 @@
 import tkinter as tk
-from tkinter import ttk
-import json
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 from tkcalendar import Calendar
 from ttkwidgets.autocomplete import AutocompleteCombobox
 import datetime
+import json
+
+class User:
+    def __init__(self, username):
+        self.username = username
+        self.tasks = []
 
 class Task:
     def __init__(self, subject, task, due_date, time):
@@ -14,41 +18,71 @@ class Task:
         self.due_date = due_date
         self.time = time
 
-tasks = []  # Initialize an empty list to store tasks
-TASKS_FILE = "tasks.json"
+users = []  # Initialize an empty list to store users
+USERS_FILE = "users.json"
 
-def load_tasks():
-    global tasks
+def load_users():
+    global users
     try:
-        with open(TASKS_FILE, "r") as file:
-            tasks_data = json.load(file)
-            tasks = [Task(**task_data) for task_data in tasks_data]
-            print("Tasks loaded:", tasks)
+        with open(USERS_FILE, "r") as file:
+            users_data = json.load(file)
+            users = []
+            for user_data in users_data:
+                username = user_data["username"]
+                user_tasks = user_data["tasks"]
+                new_user = User(username)
+                for task_data in user_tasks:
+                    subject = task_data["subject"]
+                    task = task_data["task"]
+                    due_date = task_data["due_date"]
+                    time = task_data["time"]
+                    new_task = Task(subject, task, due_date, time)
+                    new_user.tasks.append(new_task)
+                users.append(new_user)
+            print("Users loaded:", users)
     except FileNotFoundError:
-        tasks = []
+        users = []
 
-def save_tasks():
-    tasks_data = [{"subject": task.subject, "task": task.task, "due_date": task.due_date,
-                   "time": task.time} for task in tasks]
-    with open(TASKS_FILE, "w") as file:
-        json.dump(tasks_data, file, indent=4)
-    print("Tasks saved.")
+def save_users():
+    users_data = [{"username": user.username, "tasks": [task.__dict__ for task in user.tasks]} for user in users]
+    with open(USERS_FILE, "w") as file:
+        json.dump(users_data, file, indent=4)
+    print("Users saved.")
 
-def add_task(subject, task, due_date, time):
+def add_user(username):
+    new_user = User(username)
+    users.append(new_user)
+    save_users()
+    return new_user
+
+def get_user(username):
+    for user in users:
+        if user.username == username:
+            return user
+    return None
+
+def add_task(user, subject, task, due_date, time):
     new_task = Task(subject, task, due_date, time)
-    tasks.append(new_task)
-    print("Task added:", new_task)
-    save_tasks()
+    user.tasks.append(new_task)
+    print("Task added for user", user.username, ":", new_task)
+    save_users()
 
-def get_tasks():
-    return tasks
+def remove_task(user, task_index):
+    if task_index < len(user.tasks):
+        user.tasks.pop(task_index)
+        save_users()
+        return True
+    return False
+
+# Load existing users on startup
+load_users()
 
 class TasksFrame(tk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, username):
         tk.Frame.__init__(self, master)
         self.master = master
-        load_tasks()
-        self.tasks = get_tasks()
+        self.username = username
+        self.user = get_user(username) or add_user(username)
         self.style = ttk.Style(self)
         self.configure_styles()
         self.create_widgets()
@@ -60,7 +94,7 @@ class TasksFrame(tk.Frame):
         
         self.style.configure('TFrame', background="#f0f0f0")
         self.style.configure('TLabel', background="#f0f0f0", font=("Arial", 12), foreground="#333333")
-        self.style.configure('TButton', background="#4CAF50", foreground="white", font=("Arial", 10, "bold"))
+        self.style.configure('TButton', background="#EEEEEE", foreground="black", font=("Arial", 10, "bold"))
         self.style.map('TButton', background=[('active', '#45a049')])
         
         self.style.configure('Calendar', background="#ffffff", fieldbackground="#ffffff", foreground="#333333", font=("Arial", 10))
@@ -69,7 +103,6 @@ class TasksFrame(tk.Frame):
         self.style.configure('Treeview.Heading', font=("Arial", 10, "bold"))
 
     def create_widgets(self):
-        
         image_path = "background.png"  
         image = Image.open(image_path)
         photo = ImageTk.PhotoImage(image)
@@ -83,6 +116,9 @@ class TasksFrame(tk.Frame):
         self.button_frame = tk.Frame(self, background="#f0f0f0")
         self.button_frame.pack(pady=5)  
 
+        self.add_task_button = ttk.Button(self.button_frame, text="Add Task", command=self.submit_task, style='TButton')
+        self.add_task_button.grid(row=0, column=0, padx=5)
+
         self.remove_task_button = ttk.Button(self.button_frame, text="Remove Task", command=self.remove_task, style='TButton')
         self.remove_task_button.grid(row=0, column=1, padx=5)
 
@@ -90,8 +126,10 @@ class TasksFrame(tk.Frame):
         self.calendar_frame = tk.Frame(self, background="#f0f0f0")
         self.calendar_frame.pack(pady=10)
 
-        self.calendar = Calendar(self.calendar_frame, date_pattern='yyyy-mm-dd', showweeknumbers=False)
+        self.calendar = Calendar(self.calendar_frame, date_pattern='yyyy-mm-dd', showweeknumbers=False,)
         self.calendar.pack()
+        
+        self.calendar_frame.config(width=400, height=300)   
 
         # Entry Frame
         self.entry_frame = tk.Frame(self, background="#f0f0f0")
@@ -120,13 +158,9 @@ class TasksFrame(tk.Frame):
         self.table_frame.pack(pady=10)
         self.create_tasks_table()
 
-        # Submit Button
-        self.submit_button = ttk.Button(self, text="Add Task", command=self.submit_task, style='TButton')
-        self.submit_button.pack(pady=10)
-
         # Logout Button
-        self.logout_button = ttk.Button(self, text="Logout", command=self.logout, style='TButton')
-        self.logout_button.pack(pady=10)
+        logout_button = tk.Button(self, text="Logout", font=("Inter", 12, "bold"), bg="white", width=10, relief="solid", command=self.logout)
+        logout_button.place(relx=0.89, rely=0.95)
 
         # Back Button
         self.back_button = ttk.Button(self, text="Back", command=self.back, style='TButton')
@@ -158,10 +192,9 @@ class TasksFrame(tk.Frame):
             messagebox.showerror("Error", "Invalid date or time format. Use YYYY-MM-DD and HH:MM.")
             return
 
-        add_task(subject, task, due_date_str, time_str)  # Pass the parsed datetime objects
+        add_task(self.user, subject, task, due_date_str, time_str)  # Pass the parsed datetime objects
         self.update_tasks_table()
         self.clear_entries()
-        save_tasks()
 
     def clear_entries(self):
         self.subject_entry.delete(0, tk.END)
@@ -176,15 +209,14 @@ class TasksFrame(tk.Frame):
 
         for item in selected_item:
             task_index = self.table.index(item)
-            self.tasks.pop(task_index)
+            remove_task(self.user, task_index)  # Use remove_task function to delete from user's tasks
             self.table.delete(item)
-        save_tasks()
 
     def update_tasks_table(self):
         for i in self.table.get_children():
             self.table.delete(i)
 
-        for task in self.tasks:
+        for task in self.user.tasks:
             self.table.insert("", "end", values=(task.subject, task.task, task.due_date, task.time))
 
     def logout(self):
@@ -193,10 +225,10 @@ class TasksFrame(tk.Frame):
     def back(self):
         self.master.master.show_main_frame()
 
-# Assuming you have a root window and login/main frame switching mechanism set up.
+
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Homework Tracker")
     root.geometry("800x600")
-    TasksFrame(root).pack(fill="both", expand=True)
+    TasksFrame(root, "testuser").pack(fill="both", expand=True)
     root.mainloop()

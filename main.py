@@ -1,3 +1,4 @@
+#main.py
 import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
@@ -16,13 +17,15 @@ except FileNotFoundError:
     users = []
 
 class MainApplication(tk.Tk):
-    def __init__(self):
+    def __init__(self, username):
         tk.Tk.__init__(self)
         self.title("Homework Tracker")
         self.geometry("1024x768")
         self.state('zoomed')
         self._frame = None
-        self.switch_frame(HomeFrame)
+
+        # Store the current username
+        self.username = username
 
         # Load the background image
         image_path = "background.png"
@@ -58,34 +61,27 @@ class MainApplication(tk.Tk):
         self.current_section = "Home"
         self.update_button_styles()
         self.show_frame("Home")
-
-    def show_login_window(self):
-        self.destroy()  # Close the main application window
-        show_login_window(users)  # Show the login window
-
-    def show_frame_and_update_tasks(self, section):
-        self.show_frame(section)
-        if section == "Tasks":
-            self.frames[section].update_tasks_table()
+        
+        
 
     def switch_frame(self, frame_class):
         new_frame = frame_class(self)
         if self._frame is not None:
             self._frame.destroy()
-            self._frame = new_frame
-            self._frame.pack()
+        self._frame = new_frame
+        self._frame.pack()
 
     def create_frames(self):
         for section in sections:
             if section == "Home":
-                self.frames[section] = HomeFrame(self.main_content)
+                self.frames[section] = HomeFrame(self.main_content, self.username)
             elif section == "Tasks":
-                self.frames[section] = TasksFrame(self.main_content)
+                self.frames[section] = TasksFrame(self.main_content, self.username)
             elif section == "Help And Support":
-                self.frames[section] = Help_SupportFrame(self.main_content)  # Add this line
+                self.frames[section] = Help_SupportFrame(self.main_content)
             else:
                 self.frames[section] = ttk.Frame(self.main_content)
-            self.frames[section].pack(fill='both', expand=True)  # Pack the frame here
+            self.frames[section].pack(fill='both', expand=True)
 
     def show_frame(self, section):
         for sec in sections:
@@ -104,8 +100,9 @@ class MainApplication(tk.Tk):
             else:
                 button.config(bg="#FFFFFF")
 
-    def run(self):
-        self.mainloop()
+    def show_login_window(self):
+        self.destroy()
+        show_login_window(users)
 
 def login_with_email(email_entry, password_entry, users, login_window):
     email = email_entry.get()
@@ -114,17 +111,16 @@ def login_with_email(email_entry, password_entry, users, login_window):
         if user['email'] == email and user['password'] == password:
             messagebox.showinfo("Success", "Login successful!")
             login_window.destroy()
-            app = MainApplication()
-            app.mainloop()
+            app = MainApplication(user['name'])
+            app.run()
             return
     messagebox.showerror("Error", "Invalid email or password!")
 
-# Adjust the login_as_guest function similarly
 def login_as_guest(login_window):
     messagebox.showinfo("Guest", "Continuing as guest.")
     login_window.destroy()
-    app = MainApplication()
-    app.mainloop()
+    app = MainApplication("guest")
+    app.run()
 
 def show_login_window(users):
     login_window = tk.Tk()
@@ -178,7 +174,7 @@ def show_login_window(users):
     tos_label = tk.Label(login_window, text="Privacy Policy", font=("Inter", 15), bg="white")
     tos_label.place(relx=0.48, rely=0.68, anchor='center')
 
-    signup_label = tk.Label(login_window, text="Dont Have An Account?", font=button_font, bg="white")
+    signup_label = tk.Label(login_window, text="Don't Have An Account?", font=button_font, bg="white")
     signup_label.place(relx=0.92, rely=0.90, anchor='center')
 
     signup_button = tk.Button(login_window, text="Sign Up", font=button_font, bg="black", fg="white", width=15, relief="solid", command=lambda: show_signup_window(users, login_window))
@@ -190,7 +186,6 @@ def show_login_window(users):
         image_path = "123.png"
         image = Image.open(image_path)
 
-        
         desired_size = (300, 300)
         image = image.resize(desired_size, Image.LANCZOS)
 
@@ -199,11 +194,10 @@ def show_login_window(users):
 
         # Create a label to display the image
         image_label = tk.Label(login_window, image=photo, bg="white")
-        image_label.image = photo  # Keep a reference to avoid garbage collection
+        image_label.image = photo  # Keep a reference to the image
         image_label.place(relx=0.10, rely=0.85, anchor='center')
 
-    # Add the image to the login window
-    add_image()
+    add_image()  # Call the function to add the image
 
     login_window.mainloop()
 
@@ -249,17 +243,28 @@ def show_signup_window(users, login_window):
     confirm_password_entry = tk.Entry(signup_window, font=entry_font, width=35, relief="solid", show="*", fg="#828282")
     confirm_password_entry.insert(0, "confirm password")
     confirm_password_entry.place(relx=0.47, rely=0.60, anchor='center', height=40)
-
+    
     def signup():
         name = name_entry.get()
         email = email_entry.get()
         password = password_entry.get()
         confirm_password = confirm_password_entry.get()
+
+        if not name.strip() or not email.strip() or not password.strip() or not confirm_password.strip():
+            messagebox.showerror("Error", "Please fill in all fields.")
+            return
         
         error_label = tk.Label(signup_window, text="", font=("Inter", 12), fg="red", bg="white")
         error_label.place(relx=0.47, rely=0.72, anchor='center')
 
-        # Password length validation
+        if password != confirm_password:
+            error_label.config(text= "Passwords do not match.")
+            return
+        
+        if len(name) > 20:
+            error_label.config(text="Username should be maximum 20 characters.")
+            return
+
         if not (5 <= len(password) <= 20):
             error_label.config(text="Password should be between 5 and 20 characters.")
             return
@@ -275,14 +280,20 @@ def show_signup_window(users, login_window):
             error_label.config(text="Passwords do not match!")
             return
 
-        # If all validations pass, create the account
-        users.append({"name": name, "email": email, "password": password})
+        # If all checks pass, add the user to the list
+        users.append({
+            'name': name,
+            'email': email,
+            'password': password
+        })
+
+        # Save the updated user list to the file
         with open(credentials_file, 'w') as file:
-            json.dump(users, file)
-        messagebox.showinfo("Success", "Account created successfully!")
+            json.dump(users, file, indent=4)
+
+        messagebox.showinfo("Success", "Registration successful!")
         signup_window.destroy()
-
-
+        
     signup_button = tk.Button(signup_window, text="Sign Up", font=button_font, bg="black", fg="white", width=38, command=signup)
     signup_button.place(relx=0.47, rely=0.66, anchor='center')
 

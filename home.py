@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
-
+from tasks import get_user, add_task, remove_task, save_users, load_users
 
 class ProgressTrackerWindow(tk.Toplevel):
-    def __init__(self, parent, task, home_frame, task_data):
+    def __init__(self, parent, home_frame, task, task_data):
         tk.Toplevel.__init__(self, parent)
         self.parent = parent
         self.home_frame = home_frame
@@ -29,7 +29,6 @@ class ProgressTrackerWindow(tk.Toplevel):
         # Top frame
         top_frame = tk.Frame(self, bg="white")
         top_frame.pack(pady=20)
-
 
         # Steps frame
         self.steps_frame = tk.Frame(self, bg="white")
@@ -89,7 +88,6 @@ class ProgressTrackerWindow(tk.Toplevel):
         else:
             tk.messagebox.showwarning("No Task Selected", "Please select a task from the table.")
 
-
     def close_window(self):
         self.destroy()
 
@@ -148,10 +146,12 @@ class SetReminderWindow(tk.Toplevel):
 
 
 class HomeFrame(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, username):
         tk.Frame.__init__(self, parent)
         self.parent = parent
+        self.username = username
         self.create_widgets()
+        self.update_table()
 
     def create_widgets(self):
         image_path = "background.png"  
@@ -205,8 +205,6 @@ class HomeFrame(tk.Frame):
         
         progress_button = tk.Button(self, text="Progress", font=("Inter", 12, "bold"), bg="white", width=15, relief="solid", command=self.progress_window)
         progress_button.place(relx=0.04, rely=0.95)
-        
-
 
         # Logout button
         logout_button = tk.Button(self, text="Logout", font=("Inter", 12, "bold"), bg="white", width=10, relief="solid", command=self.logout)
@@ -215,8 +213,12 @@ class HomeFrame(tk.Frame):
         heading_label = tk.Label(self, text="Upcoming Tasks:", font=("Inter", 28, "bold italic"), bg="#269bf2")
         heading_label.place(relx=0.5, rely=0.4, anchor="center")  
         
-        heading_label = tk.Label(self, text="Welcome Back Tharin", font=("Inter",  30, "italic"), bg="#74b3e0")
-        heading_label.place(x=220, y=40, anchor="center")
+        self.welcome_label = tk.Label(self, text=f"Welcome Back {self.username}", font=("Inter", 30, "italic"), bg="#74b3e0")
+        self.welcome_label.place(x=1, y=28, anchor="w")  # Positioning to the right of the sidebar
+
+        # Make the welcome label wrap text to fit within the window width
+        max_width = self.winfo_width() - 340  # Adjust based on the window width and padding
+        self.welcome_label.config(wraplength=max_width)
         
     def progress_window(self):
         selected_item = self.table.selection()
@@ -229,17 +231,11 @@ class HomeFrame(tk.Frame):
 
     def update_table(self):
         self.table.delete(*self.table.get_children())
-
-        # Sample data for table
-        data = [
-            ("Physics", "ESA Chapter 10", "12/04/24", "8:00 P.M"),
-            ("Maths", "Stats Mock", "5/04/24", "11:59 P.M"),
-            ("English", "Novel Questions", "15/05/24", "TBD")
-        ]
-
-        # Insert data into the table
-        for item in data:
-            self.table.insert("", tk.END, values=item)
+        user = get_user(self.username)
+        if user:
+            tasks = user.tasks
+            for task in tasks:
+                self.table.insert("", tk.END, values=(task.subject, task.task, task.due_date, task.time))
 
     def set_reminder_window(self):
         SetReminderWindow(self.master)
@@ -255,7 +251,7 @@ class MainApp(tk.Tk):
         self.create_widgets()
 
     def create_widgets(self):
-        self.home_frame = HomeFrame(self)
+        self.home_frame = HomeFrame(self,username="your_username_here")  # Pass the username
         self.home_frame.pack(fill="both", expand=True)
 
 if __name__ == "__main__":
