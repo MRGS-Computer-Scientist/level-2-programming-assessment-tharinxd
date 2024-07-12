@@ -276,6 +276,11 @@ def show_signup_window(users, login_window):
     confirm_password_entry.insert(0, "confirm password")
     confirm_password_entry.place(relx=0.47, rely=0.60, anchor='center', height=40)
 
+    # Initialize error label
+    error_label = tk.Label(signup_window, text="", font=("Inter", 12), fg="red", bg="white")
+    error_label.place(relx=0.47, rely=0.72, anchor='center')
+    signup_window.error_label = error_label
+
     # Signup function to handle registration
     def signup():
         name = name_entry.get()
@@ -283,20 +288,20 @@ def show_signup_window(users, login_window):
         password = password_entry.get()
         confirm_password = confirm_password_entry.get()
 
+        # Clear previous error message
+        signup_window.error_label.config(text="")
+
         # Basic validation checks
         if not name.strip() or not email.strip() or not password.strip() or not confirm_password.strip():
-            messagebox.showerror("Error", "Please fill in all fields.")
+            signup_window.error_label.config(text="Please fill in all fields.")
             return
 
-        error_label = tk.Label(signup_window, text="", font=("Inter", 12), fg="red", bg="white")
-        error_label.place(relx=0.47, rely=0.72, anchor='center')
-
         if password != confirm_password:
-            error_label.config(text= "Passwords do not match.")
+            signup_window.error_label.config(text="Passwords do not match.")
             return
 
         if len(name) > 20:
-            error_label.config(text="Username should be maximum 20 characters.")
+            signup_window.error_label.config(text="Username should be maximum 20 characters.")
             return
 
         # Password complexity checks
@@ -304,26 +309,26 @@ def show_signup_window(users, login_window):
         has_upper = any(char.isupper() for char in password)
 
         if not has_number or not has_upper:
-            error_label.config(text="Password must contain at least one number and one capital letter.")
+            signup_window.error_label.config(text="Password must contain at least one number and one capital letter.")
             return
 
         if not (5 <= len(password) <= 20):
-            error_label.config(text="Password should be between 5 and 20 characters.")
+            signup_window.error_label.config(text="Password should be between 5 and 20 characters.")
             return
-        
+
         if re.search(r'[\U00010000-\U0010ffff]', name):
-            error_label.config(text="Emojis are not allowed in username.")
+            signup_window.error_label.config(text="Emojis are not allowed in username.")
             return
-        
+
         # Check for symbols in username
         if re.search(r'[!@#$%^&*(),.?":{}|<>]', name):
-            error_label.config(text="Symbols are not allowed in username.")
+            signup_window.error_label.config(text="Symbols are not allowed in username.")
             return
 
         # Check if email already exists
         for user in users:
             if user['email'] == email:
-                error_label.config(text="Account already exists.")
+                signup_window.error_label.config(text="Account already exists.")
                 return
 
         # If all checks pass, add the user to the list and save to file

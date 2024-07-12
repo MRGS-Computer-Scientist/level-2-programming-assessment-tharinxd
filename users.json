@@ -7,10 +7,10 @@
         "username": "tharin",
         "tasks": [
             {
-                "subject": "maths",
-                "task": "ep",
-                "due_date": "2024-07-30",
-                "time": "00:45"
+                "subject": "Maths",
+                "task": "Workbook Page 1-30",
+                "due_date": "2024-07-12",
+                "time": "04:20"
             }
         ]
     },
@@ -81,6 +81,10 @@
     },
     {
         "username": "rehaan",
+        "tasks": []
+    },
+    {
+        "username": "yolooo",
         "tasks": []
     }
 ]
